@@ -1,0 +1,54 @@
+version: 1
+updated_at: 2026-08-17
+
+fallbacks:
+  - capability: knowledge.research
+    order:
+      - google-deep-research-ui
+      - google-gemini-api
+      - research.web-general
+    fail_when:
+      - no_current_sources
+      - provider_unavailable
+
+  - capability: creative.image.local
+    order:
+      - comfyui-local
+      - fal-api
+    fail_when:
+      - local_gpu_unavailable
+      - local_runtime_unhealthy
+
+  - capability: creative.image.cloud
+    order:
+      - fal-api
+      - comfyui-local
+
+  - capability: creative.video.cloud
+    order:
+      - higgsfield-mcp
+      - fal-api
+    fail_when:
+      - provider_unavailable
+      - quota_exhausted
+
+  - capability: dev.async-coding
+    order:
+      - claude-code-local
+      - codex-local
+    fail_when:
+      - executor_unavailable
+      - repo_permission_missing
+
+  - capability: storage.files
+    order:
+      - google-drive-connector
+    fail_when:
+      - connector_unavailable
+      - destination_policy_denied
+
+rules:
+  - Fallbacks preserve the skill output contract whenever possible.
+  - Provider-specific features may require a degraded-result marker.
+  - Do not silently switch to a higher-cost provider without policy evaluation.
+  - A missing safe fallback is preferable to an unsafe implicit fallback.
