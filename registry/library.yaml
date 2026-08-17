@@ -1,0 +1,24 @@
+version: 1
+updated_at: 2026-08-17
+schema: ../LIBRARY_SCHEMA.md
+
+items: []
+
+# Canonical machine-readable registry.
+# Add one compact entry per curated technology/pattern.
+# Full analysis lives in the referenced Markdown record.
+#
+# Example:
+# - id: higgsfield
+#   name: Higgsfield
+#   category: media.video
+#   status: curated
+#   priority: high
+#   open_source: false
+#   self_hostable: false
+#   canonical_owner: ginkgo-pyre
+#   ginkgo_products: [ginkgo-pyre, ginkgo-commerce-os, ginkgo-wave, scale-group]
+#   capabilities: [media.video.generate, media.product-ad.generate, media.identity.persist]
+#   tags: [video, ugc, mcp, multimodal]
+#   record: 40-media/video/higgsfield.md
+#   source_verified_at: 2026-08-17
