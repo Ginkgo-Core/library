@@ -1,0 +1,81 @@
+version: 1
+updated_at: 2026-08-17
+
+providers:
+  - id: google-ai
+    name: Google AI ecosystem
+    kind: external-capability-provider
+    status: adopted
+    access_modes: [web-ui, first-party-apps, cloud-api]
+    billing_model: mixed
+    canonical_docs:
+      - https://support.google.com/googleone/answer/14534406
+      - https://support.google.com/googleone/answer/16476811
+      - https://support.google.com/notebooklm/answer/16213268
+    capabilities:
+      - reasoning
+      - web-research
+      - knowledge-notebooks
+      - image-generation
+      - video-generation
+      - music-generation
+      - ai-prototyping
+      - coding-agents
+      - cloud-storage
+      - workspace-assistance
+    products:
+      - Gemini
+      - NotebookLM
+      - Google Flow
+      - Google Flow Music
+      - Google AI Studio
+      - Google Antigravity
+      - Jules
+      - Google Drive
+      - Gmail
+      - Docs
+      - Sheets
+    rules:
+      - "Subscription UI benefits do not imply free or unlimited API usage."
+      - "Programmatic Gemini usage must be accounted for under Gemini API / Google Cloud quotas and billing."
+      - "Usage limits and plan entitlements are volatile; verify official documentation before automating around a numeric quota."
+      - "Personal Google AI plans are not the canonical storage boundary for enterprise client secrets or regulated data."
+    preferred_consumers:
+      - Ginkgo-Core/ginkgo-library
+      - Ginkgo-Core/ginkgo-source
+      - Ginkgo-Core/Sylvia
+      - Ginkgo-Core/ai-stack
+      - Ginkgo-Seeds/ginkgo-pyre
+    verified_at: 2026-08-17
+
+  - id: supabase
+    name: Supabase
+    kind: external-platform
+    status: adopted
+    access_modes: [api, sdk, cli, hosted]
+    capabilities: [postgres, auth, storage, realtime, vector, edge-functions]
+    canonical_role: operational-data-plane
+
+  - id: github
+    name: GitHub
+    kind: external-platform
+    status: adopted
+    access_modes: [web, git, api, app]
+    capabilities: [source-control, issues, pull-requests, ci-cd, artifact-history]
+    canonical_role: source-of-truth-for-code
+
+  - id: higgsfield
+    name: Higgsfield
+    kind: external-media-provider
+    status: experiment
+    access_modes: [web, mcp]
+    capabilities: [image-generation, video-generation, ugc, identity-consistency]
+    canonical_role: cloud-creative-provider-behind-pyre-router
+
+  - id: fal
+    name: fal.ai
+    kind: external-model-provider
+    status: experiment
+    access_modes: [api]
+    capabilities: [image-generation, video-generation, audio, model-inference]
+    canonical_role: provider-behind-capability-router
