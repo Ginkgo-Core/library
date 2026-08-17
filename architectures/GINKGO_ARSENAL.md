@@ -1,56 +1,118 @@
 # Ginkgo Arsenal
 
-> Canonical capability map for local runtimes, external providers and agentic tooling used by Ginkgo AI Systems.
+> Canonical executable map of agent-usable capabilities, skills, tools, endpoints and policies across local runtimes and external providers.
 
 ## Principle
 
-The Arsenal is **not a subscription list**. It is a governed registry of capabilities that Sylvia, Source, n8n and product runtimes can route to.
+The Arsenal is **not a subscription list** and is not a vendor directory.
+
+It is a governed map that lets an agent resolve:
 
 ```text
-capability -> policy -> provider -> artifact -> evidence
+agent goal
+  -> capability
+  -> purpose-driven skill
+  -> policy
+  -> tool / adapter
+  -> API | MCP | CLI | connector | human-assisted surface
+  -> endpoint
+  -> credential reference
+  -> execution
+  -> normalized result
 ```
 
-A product must depend on a **capability contract**, not directly on a vendor whenever practical.
+A product or agent should depend on a **skill/capability contract**, not directly on a vendor whenever practical.
 
 ## Canonical architecture
 
 ```mermaid
 flowchart TD
     U[User / Client / Event] --> O[Sylvia / Source / n8n]
-    O --> R[Capability Router]
+    O --> G[Goal Resolver]
+    G --> C[Capability]
+    C --> S[Purpose-driven Skill]
+    S --> P[Policy + Cost + Safety]
+    P --> R[Tool Router]
 
-    R --> L[Local runtimes]
-    R --> G[Google AI ecosystem]
-    R --> E[Other external providers]
+    R --> L[Local tools]
+    R --> E[External tools]
+    R --> H[Human-assisted surfaces]
 
-    L --> C[ComfyUI]
-    L --> DB[Postgres / Redis]
+    L --> COMFY[ComfyUI API]
+    L --> CODE[Claude Code / Codex]
 
-    G --> GEM[Gemini]
-    G --> RES[Deep Research]
-    G --> NB[NotebookLM]
-    G --> FLOW[Flow / Flow Music]
-    G --> AIS[AI Studio]
-    G --> DEV[Antigravity / Jules]
-    G --> DRIVE[Drive]
-
-    E --> SUPA[Supabase]
-    E --> GH[GitHub]
-    E --> HIGGS[Higgsfield]
+    E --> GEM[Gemini API]
+    E --> GH[GitHub API]
+    E --> SUPA[Supabase API]
     E --> FAL[fal.ai]
+    E --> HIGGS[Higgsfield MCP]
+    E --> DRIVE[Drive connector]
 
-    RES --> LIB[Ginkgo Library]
-    NB --> LIB
-    LIB --> K[Patterns / Standards / Skills / Laws]
-    K --> O
+    H --> NB[NotebookLM]
+    H --> DR[Deep Research UI]
+
+    R --> N[Normalized Result]
+    N --> ART[Artifact + Evidence + Provenance]
 ```
+
+## Registry layers
+
+| Registry | Question answered |
+|---|---|
+| `providers.yaml` | Who provides the capability? |
+| `capabilities.yaml` | What can the system accomplish? |
+| `skills.yaml` | What purposeful action can an agent execute? |
+| `tools.yaml` | What concrete execution surface exists? |
+| `endpoints.yaml` | Where/how is it invoked? |
+| `policies.yaml` | When is it allowed and how should it be routed? |
+| `fallbacks.yaml` | What is the safe alternative if the preferred implementation fails? |
+
+## Naming rule
+
+Skills are named by **purpose**, never by brand.
+
+Bad:
+
+```text
+skill-gemini
+skill-supabase
+skill-github
+```
+
+Good:
+
+```text
+research.market-deep-scan
+knowledge.ingest-source-set
+code.repo.inspect
+code.issue.create
+storage.file.archive
+database.query.read
+media.image.generate.local
+media.product-ad.fast
+```
+
+Providers remain implementation details below those skills.
+
+## Execution modes
+
+Every tool must truthfully declare one of:
+
+- `autonomous` — callable by an agent without a human interaction step;
+- `supervised` — executable by an agent while a human remains in the control loop;
+- `connector` — executed through a governed connected application/tool;
+- `human_assisted` — a human must operate or approve the product surface.
+
+A web-only product must never be presented to Sylvia as an autonomous API.
 
 ## Habitats
 
 | Habitat | Canonical role |
 |---|---|
 | GitHub | source code, versioned engineering docs, PR history |
-| Ginkgo Library | technology intelligence, clippings, research, patterns, standards |
+| Ginkgo Library | Arsenal definitions, technology intelligence, clippings, research, patterns, standards |
+| Ginkgo Agents | skill implementations, contracts and evals |
+| Ginkgo Connect | governed adapters/connectors and external context boundaries |
 | Google Drive | large files, media, datasets, documents and selected backups |
 | NotebookLM | source-grounded learning and synthesis over curated source sets |
 | Supabase/Postgres | operational application state |
@@ -58,70 +120,77 @@ flowchart TD
 | Gemini / model providers | intelligence |
 | Pyre / Creative Router | creative provider abstraction |
 
+## Ownership boundary
+
+```text
+Library  -> what exists and the canonical Arsenal map
+Agents   -> how a reusable skill is implemented and evaluated
+Connect  -> how external systems are connected safely
+ai-stack -> what runs locally
+Sylvia   -> when to choose a skill
+n8n      -> workflow execution/orchestration
+Source   -> composition of validated capabilities into solutions
+```
+
 ## Routing policy
 
-1. Identify the capability required.
-2. Determine constraints: privacy, latency, quality, reproducibility, cost, context size, GPU/CPU availability.
-3. Select provider from `registry/capabilities.yaml`.
-4. Record provider/model/version/cost when the output becomes an operational artifact.
-5. Fall back without changing the caller contract.
+1. Resolve the desired outcome, not the vendor.
+2. Select the capability.
+3. Select a purpose-driven skill.
+4. Evaluate constraints: privacy, latency, quality, reproducibility, cost, quota and availability.
+5. Select a concrete tool from `registry/tools.yaml` under `registry/policies.yaml`.
+6. Resolve the endpoint/adapter without leaking provider details into the caller.
+7. Execute and normalize the result.
+8. Record provider/model/version/cost when the result becomes an operational artifact.
+9. Apply a declared fallback only if the output contract remains safe and intelligible.
 
-## Local vs external
+## Example: research
 
-Use local runtimes when:
-- reproducibility matters;
-- inputs should remain local;
-- repeated marginal cost should be low;
-- a deterministic workflow can be pinned and tested.
+```mermaid
+flowchart LR
+    A[Need: understand Brazilian real-estate CRM market] --> B[knowledge.research]
+    B --> C[research.market-deep-scan]
+    C --> D{Policy}
+    D --> E[Deep Research human-assisted]
+    D --> F[Gemini API autonomous]
+    D --> G[Web research fallback]
+    E --> H[research-pack]
+    F --> H
+    G --> H
+```
 
-Use external providers when:
-- quality or capability exceeds local hardware;
-- context size is the main constraint;
-- research/search integration is valuable;
-- the workload is bursty;
-- audiovisual generation would be inefficient locally.
+The caller asks for the skill result, not for Gemini specifically.
+
+## Example: creative routing
+
+```mermaid
+flowchart LR
+    A[Need image] --> C{Constraints}
+    C -->|privacy/reproducibility| L[media.image.generate.local]
+    C -->|speed/cloud quality| E[media.image.generate.cloud]
+    L --> COMFY[ComfyUI]
+    E --> FAL[fal.ai]
+    COMFY --> O[creative-asset]
+    FAL --> O
+```
 
 ## Google AI as an external capability cluster
 
-Google AI is modeled as one provider family with multiple distinct capabilities:
+Google AI is modeled as one provider family with distinct surfaces:
 
-- Gemini: reasoning, multimodal analysis, long-context work.
-- Deep Research: research packs and current external evidence.
-- NotebookLM: source-grounded learning and knowledge synthesis.
-- Flow: cloud audiovisual generation.
-- Flow Music: music and sonic assets.
-- AI Studio: prompt/model/tool-calling prototyping.
-- Antigravity / Jules: delegated development work.
-- Drive: file and media storage.
-- Gmail / Docs / Sheets: human productivity surfaces.
+- Gemini API: autonomous reasoning/multimodal execution when API billing is configured.
+- Deep Research: currently represented as a human-assisted research surface unless a supported autonomous integration is available.
+- NotebookLM: human-assisted/source-grounded learning and synthesis unless a supported autonomous integration is available.
+- Flow / Flow Music: creative surfaces; automation status must be represented truthfully.
+- AI Studio: prototyping surface, not automatically a production API entitlement.
+- Antigravity / Jules: delegated development surfaces when validated and connected.
+- Drive: governed file storage through connector/API access.
 
 **Rule:** consumer-plan benefits and programmatic API entitlements are separate. Never infer that a paid UI subscription grants free or unlimited backend/API calls.
 
-## Agentic workers
-
-### Researcher
-Input: question, market, technology or decision.
-Output: `research-pack` with sources, findings, uncertainty, alternatives and recommendation.
-
-### Librarian
-Input: clippings, papers, docs, transcripts, repository docs.
-Output: notebook, synthesis, glossary, relationship map, FAQ, study material.
-
-### Creative worker
-Input: commercial brief.
-Output: routed image/video/audio asset plus provenance and cost metadata.
-
-### Engineer
-Input: scoped repository task.
-Output: branch/diff/tests/evidence, produced by Claude Code, Codex, Jules, Antigravity or another validated executor.
-
-### Router
-Input: desired outcome + constraints.
-Output: capability selection + provider decision; does not perform complex specialist execution itself.
-
 ## Cost and entitlement contract
 
-Every provider registry entry should distinguish:
+Every tool/provider entry should distinguish access boundaries, for example:
 
 ```yaml
 access:
@@ -132,16 +201,37 @@ access:
     billing: external
 ```
 
-Numeric quotas are volatile. They belong in observed entitlement records or dated provider notes, not hard-coded business logic.
+Numeric quotas are volatile. They belong in dated observed-entitlement records, not hard-coded product logic.
 
-## Definition of done for a new Arsenal capability
+## Clipping -> Arsenal promotion
 
-A capability is `adopted` only when:
-- owner and purpose are clear;
-- access mode is known;
-- cost/billing boundary is documented;
-- privacy/security implications are reviewed;
-- caller contract is defined;
-- fallback or failure behavior is known;
+```text
+clipping
+  -> raw source
+  -> source set / notebook
+  -> research + verification
+  -> synthesis
+  -> pattern candidate
+  -> benchmark / repeated evidence
+  -> law / standard / playbook
+  -> reproducible action?
+       yes -> skill candidate -> eval -> Arsenal
+       no  -> durable knowledge only
+```
+
+Not every clipping becomes a skill. A skill exists only when an action is reproducible, purposeful, permissioned and has a clear result contract.
+
+## Definition of done for an Arsenal skill
+
+A skill is adopted only when:
+- purpose is explicit;
+- capability is clear;
+- inputs and outputs are defined;
+- permissions are explicit;
+- execution mode is truthful;
+- at least one real tool implementation exists;
+- access/auth boundary is known without storing secrets;
+- cost/billing implications are understood;
+- fallback/failure behavior is defined;
 - at least one real use case exists;
-- evidence or a benchmark supports adoption.
+- evidence or an eval supports adoption.
