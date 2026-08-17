@@ -1,0 +1,51 @@
+version: 1
+updated_at: 2026-08-17
+
+policies:
+  - id: provider-selection-default
+    purpose: Select the best implementation for a requested capability.
+    decision_inputs: [quality, cost, latency, privacy, reproducibility, quota, availability]
+    default_weights:
+      quality: 0.35
+      cost: 0.25
+      latency: 0.15
+      privacy: 0.15
+      reproducibility: 0.10
+    rules:
+      - Prefer local when privacy, reproducibility or marginal cost dominate.
+      - Prefer external when capability, speed, context size or specialist quality dominate.
+      - Never infer API entitlement from a consumer subscription.
+      - Record provider/model/version/cost when an output becomes an operational artifact.
+
+  - id: external-write-safety
+    purpose: Govern mutations outside the local machine.
+    applies_to: [github, google-drive, supabase, external-apis]
+    rules:
+      - Use the narrowest available credential scope.
+      - Distinguish read, create, update, delete and irreversible actions.
+      - Require explicit tool contracts for destructive actions.
+      - Never store credentials in Git.
+
+  - id: knowledge-promotion
+    purpose: Prevent unverified clippings from becoming operational truth.
+    rules:
+      - Raw sources remain immutable with provenance.
+      - Notebook synthesis is not itself a law or standard.
+      - A law/standard requires repeated evidence or a validated benchmark.
+      - Promotions must preserve source links and confidence.
+
+  - id: cost-control
+    purpose: Avoid accidental spend from agentic routing.
+    rules:
+      - Every paid API must expose a cost model or unknown-cost marker.
+      - Prefer included/manual surfaces for exploration when automation is unnecessary.
+      - Use API/backend execution only when the workflow actually requires programmatic access.
+      - Quotas and prices are volatile facts and must not be hard-coded into product logic.
+
+  - id: execution-mode-truth
+    purpose: Prevent agents from assuming automation where only a UI exists.
+    rules:
+      - autonomous means callable without a human interaction step.
+      - supervised means an agent can execute but a human remains in the control loop.
+      - connector means execution occurs through a governed connected app/tool.
+      - human_assisted means a human must operate or approve the surface.
