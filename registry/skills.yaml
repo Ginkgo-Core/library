@@ -1,0 +1,127 @@
+version: 1
+updated_at: 2026-08-17
+
+# Skills are purpose-driven agent actions.
+# They are named by intent/capability, not vendor.
+
+skills:
+  - id: research.market-deep-scan
+    purpose: Research a market, competitors, pricing, complaints, opportunities and gaps.
+    capability: knowledge.research
+    inputs: [market, geography, questions]
+    outputs: [research_report, sources, findings, opportunities, confidence]
+    preferred_tools: [google-deep-research-ui, google-gemini-api]
+    fallbacks: [research.web-general]
+    permissions:
+      external_network: true
+      write_files: true
+      send_messages: false
+    human_approval: false
+    cost_tier: medium
+
+  - id: research.web-general
+    purpose: Gather current evidence from the public web when a specialist research provider is unavailable.
+    capability: knowledge.research
+    inputs: [question, constraints]
+    outputs: [sources, findings, uncertainty]
+    preferred_tools: []
+    human_approval: false
+    cost_tier: low
+
+  - id: knowledge.ingest-source-set
+    purpose: Convert clippings, papers, docs and transcripts into a governed source set for synthesis and learning.
+    capability: knowledge.notebook
+    inputs: [sources, topic, provenance]
+    outputs: [source_set, synthesis, glossary, open_questions]
+    preferred_tools: [google-notebooklm]
+    human_approval: true
+    promotion_pipeline: 50-data-knowledge/KNOWLEDGE_PROMOTION_PIPELINE.md
+
+  - id: knowledge.promote-pattern
+    purpose: Promote repeated evidence into a reusable pattern, standard or law only after verification.
+    capability: knowledge.notebook
+    inputs: [source_set, synthesis, evidence]
+    outputs: [pattern_candidate, confidence, promotion_target]
+    preferred_tools: [google-notebooklm, google-gemini-api]
+    human_approval: true
+
+  - id: code.repo.inspect
+    purpose: Inspect repository structure, history, issues and implementation context without modifying it.
+    capability: code.repo.inspect
+    inputs: [repository, question]
+    outputs: [repo_map, findings, risks]
+    preferred_tools: [github-api]
+    human_approval: false
+
+  - id: code.issue.create
+    purpose: Turn validated architecture or backlog work into an actionable GitHub issue.
+    capability: code.issue.create
+    inputs: [repository, title, scope, acceptance_criteria]
+    outputs: [issue_reference]
+    preferred_tools: [github-api]
+    human_approval: false
+
+  - id: code.pr.open
+    purpose: Open a pull request from a prepared implementation branch with evidence and acceptance criteria.
+    capability: code.pr.open
+    inputs: [repository, branch, base, summary, validation]
+    outputs: [pull_request_reference]
+    preferred_tools: [github-api]
+    human_approval: false
+
+  - id: code.implement.scoped
+    purpose: Implement a scoped repository change using a coding executor and return diff, tests and evidence.
+    capability: dev.async-coding
+    inputs: [repository, task, constraints, acceptance_criteria]
+    outputs: [branch, diff, tests, evidence]
+    preferred_tools: [claude-code-local, codex-local]
+    human_approval: supervised
+
+  - id: storage.file.archive
+    purpose: Store large documents, media, datasets or selected backups outside Git while returning a durable reference.
+    capability: storage.files
+    inputs: [file, destination_class, metadata]
+    outputs: [durable_file_reference]
+    preferred_tools: [google-drive-connector]
+    human_approval: false
+
+  - id: database.query.read
+    purpose: Read operational application data through a governed database boundary.
+    capability: database.query
+    inputs: [project, query_or_intent]
+    outputs: [normalized_rows, provenance]
+    preferred_tools: [supabase-api]
+    human_approval: false
+
+  - id: media.image.generate.local
+    purpose: Generate a reproducible local image when privacy, control or marginal cost dominate.
+    capability: creative.image.local
+    inputs: [prompt, negative_prompt, preset, seed]
+    outputs: [creative_asset, generation_metadata]
+    preferred_tools: [comfyui-local]
+    fallbacks: [media.image.generate.cloud]
+    use_when: [privacy_required, reproducibility_required, local_gpu_available]
+    avoid_when: [local_gpu_busy, cloud_quality_required]
+    human_approval: false
+
+  - id: media.image.generate.cloud
+    purpose: Generate a cloud image when speed or provider-specific quality dominates.
+    capability: creative.image.cloud
+    inputs: [prompt, references, aspect_ratio, quality]
+    outputs: [creative_asset, provider_metadata, cost]
+    preferred_tools: [fal-api]
+    human_approval: false
+
+  - id: media.product-ad.fast
+    purpose: Produce commercial product creatives quickly for ads, social and commerce experiments.
+    capability: creative.video.cloud
+    inputs: [product, offer, channel, references]
+    outputs: [creative_asset, hook, provider_metadata, cost]
+    preferred_tools: [higgsfield-mcp, fal-api]
+    human_approval: false
+
+principles:
+  - Name skills by purpose, not by vendor.
+  - A skill must have explicit inputs, outputs, permissions and intended result.
+  - A clipping becomes a skill only after a reproducible action has been validated.
+  - Human-assisted surfaces must remain marked as such until an actual autonomous integration exists.
