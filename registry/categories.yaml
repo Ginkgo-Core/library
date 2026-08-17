@@ -1,0 +1,127 @@
+version: 1
+
+categories:
+  - id: agents
+    path: 10-agents
+    children:
+      - agents.frameworks
+      - agents.runtimes
+      - agents.skills
+      - agents.memory
+      - agents.evaluation
+      - agents.self-improvement
+      - agents.coding
+      - agents.research
+      - agents.multi-agent
+      - agents.tool-use
+      - agents.context-management
+
+  - id: automation
+    path: 20-automation
+    children:
+      - automation.n8n
+      - automation.workflow-engines
+      - automation.browser
+      - automation.queues-jobs
+      - automation.integrations
+      - automation.messaging
+      - automation.webhooks
+      - automation.scheduling
+
+  - id: models
+    path: 30-models-routing
+    children:
+      - models.gateways
+      - models.routing
+      - models.inference
+      - models.local
+      - models.coding
+      - models.multimodal
+      - models.embedding
+      - models.reranking
+      - models.cost-optimization
+
+  - id: media
+    path: 40-media
+    children:
+      - media.image
+      - media.video
+      - media.audio-voice
+      - media.avatars-identities
+      - media.comfyui
+      - media.creative-commerce
+      - media.lipsync
+      - media.upscaling
+      - media.motion
+
+  - id: data
+    path: 50-data-knowledge
+    children:
+      - data.rag
+      - data.vector-search
+      - data.knowledge-graphs
+      - data.databases
+      - data.scraping-ingestion
+      - data.document-processing
+      - data.search
+      - data.memory-store
+      - data.analytics
+
+  - id: app
+    path: 60-app-platform
+    children:
+      - app.frontend
+      - app.backend
+      - app.auth
+      - app.payments
+      - app.crm
+      - app.saas-patterns
+      - app.admin
+      - app.communication
+      - app.marketplace
+      - app.cms
+
+  - id: design
+    path: 70-design
+    children:
+      - design.systems
+      - design.ux-review
+      - design.motion
+      - design.threejs
+      - design.gsap
+      - design.lottie
+      - design.remotion
+      - design.visual-regression
+      - design.accessibility
+      - design.prototyping
+
+  - id: infrastructure
+    path: 80-infrastructure
+    children:
+      - infra.docker
+      - infra.deployment
+      - infra.observability
+      - infra.queues
+      - infra.storage
+      - infra.networking
+      - infra.security
+      - infra.secrets
+      - infra.compute
+      - infra.gpu
+      - infra.serverless
+
+  - id: business
+    path: 90-business-use-cases
+    children:
+      - business.social-factory
+      - business.commerce
+      - business.real-estate
+      - business.sales
+      - business.workforce
+      - business.customer-service
+      - business.marketing
+      - business.creator-economy
+      - business.education
+      - business.identity
+      - business.legal
+      - business.finance
