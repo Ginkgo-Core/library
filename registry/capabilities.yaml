@@ -1,0 +1,91 @@
+version: 1
+updated_at: 2026-08-17
+
+capabilities:
+  - id: knowledge.research
+    purpose: Deep web research and evidence gathering
+    preferred:
+      - provider: google-ai
+        product: Gemini Deep Research
+    fallbacks:
+      - provider: web-search
+    output_contract: research-pack
+
+  - id: knowledge.notebook
+    purpose: Source-grounded learning, synthesis and question answering over curated source sets
+    preferred:
+      - provider: google-ai
+        product: NotebookLM
+    output_contract: notebook-synthesis
+
+  - id: reasoning.long-context
+    purpose: Large-context analysis of repositories, documents, logs and mixed source packs
+    preferred:
+      - provider: google-ai
+        product: Gemini
+    output_contract: analysis-artifact
+
+  - id: creative.image.local
+    purpose: Reproducible local image generation and controlled workflows
+    preferred:
+      - provider: local
+        product: ComfyUI
+    fallbacks:
+      - provider: google-ai
+        product: image-generation
+      - provider: fal
+    output_contract: creative-asset
+
+  - id: creative.video.cloud
+    purpose: Cloud video generation for ads, UGC, B-roll and social assets
+    preferred:
+      - provider: google-ai
+        product: Google Flow
+      - provider: higgsfield
+    output_contract: creative-asset
+
+  - id: creative.music
+    purpose: Background music, sonic identity and campaign audio
+    preferred:
+      - provider: google-ai
+        product: Google Flow Music
+    output_contract: audio-asset
+
+  - id: dev.prototype-ai
+    purpose: Prompt, model, structured-output and tool-calling prototyping
+    preferred:
+      - provider: google-ai
+        product: Google AI Studio
+    output_contract: validated-prototype
+
+  - id: dev.async-coding
+    purpose: Delegated repository work with isolated task ownership
+    preferred:
+      - provider: google-ai
+        product: Jules
+      - provider: google-ai
+        product: Google Antigravity
+    fallbacks:
+      - provider: local
+        product: Claude Code
+      - provider: local
+        product: Codex
+    output_contract: reviewed-diff
+
+  - id: storage.files
+    purpose: Large-file and document storage outside Git repositories
+    preferred:
+      - provider: google-ai
+        product: Google Drive
+    rules:
+      - GitHub remains canonical for source code and versioned engineering docs.
+      - Operational application state belongs in databases such as Supabase/Postgres.
+      - Secrets require a dedicated governed secret boundary, not arbitrary Drive folders.
+    output_contract: durable-file-reference
+
+routing_principles:
+  - "Choose a capability first, then a provider."
+  - "Providers are replaceable implementations behind stable Ginkgo contracts."
+  - "Prefer local when reproducibility, privacy or marginal cost dominates."
+  - "Prefer external when quality, speed, context size or multimodal capability dominates."
+  - "Do not infer API entitlement from a consumer subscription."
