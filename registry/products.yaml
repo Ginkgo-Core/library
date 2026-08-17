@@ -1,0 +1,46 @@
+version: 1
+
+products:
+  - id: ginkgo-library
+    repository: Ginkgo-Core/ginkgo-library
+    role: canonical technology intelligence library
+
+  - id: ai-stack
+    repository: Ginkgo-Core/ai-stack
+    role: shared runtime, automation and infrastructure laboratory
+
+  - id: ginkgo-agents
+    repository: Ginkgo-Core/ginkgo-agents
+    role: reusable agent and skill laboratory with evals
+
+  - id: ginkgo-source
+    repository: Ginkgo-Core/ginkgo-source
+    role: solution composition and reusable delivery asset system
+
+  - id: ginkgo-connect
+    repository: Ginkgo-Seeds/ginkgo-connect
+    role: governed read-only connector and external context plane
+
+  - id: ginkgo-pyre
+    repository: Ginkgo-Seeds/ginkgo-pyre
+    role: creative and media generation engine
+
+  - id: ginkgo-wave
+    repository: Ginkgo-Seeds/ginkgo-wave
+    role: advertising performance and optimization
+
+  - id: ginkgo-commerce-os
+    repository: Ginkgo-Seeds/ginkgo-commerce-os
+    role: commerce, product, offer, distribution and revenue orchestration
+
+  - id: sylvia
+    repository: Ginkgo-Core/Sylvia
+    role: agent orchestrator and executor coordination
+
+  - id: leaf
+    repository: LeafCRM/leaf
+    role: CRM / vertical product family
+
+  - id: scale-group
+    repository: Scale-Characters/Scale-Group
+    role: creator and commerce operations
