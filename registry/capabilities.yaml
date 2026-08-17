@@ -1,91 +1,101 @@
-version: 1
+version: 2
 updated_at: 2026-08-17
+
+# Capability = what the system can accomplish.
+# Skill = purpose-driven reusable action.
+# Tool/provider = replaceable implementation.
 
 capabilities:
   - id: knowledge.research
-    purpose: Deep web research and evidence gathering
-    preferred:
-      - provider: google-ai
-        product: Gemini Deep Research
-    fallbacks:
-      - provider: web-search
+    purpose: Deep web research and evidence gathering.
+    preferred_skills: [research.market-deep-scan]
     output_contract: research-pack
 
   - id: knowledge.notebook
-    purpose: Source-grounded learning, synthesis and question answering over curated source sets
-    preferred:
-      - provider: google-ai
-        product: NotebookLM
+    purpose: Source-grounded learning, synthesis and question answering over curated source sets.
+    preferred_skills: [knowledge.ingest-source-set, knowledge.promote-pattern]
     output_contract: notebook-synthesis
 
   - id: reasoning.long-context
-    purpose: Large-context analysis of repositories, documents, logs and mixed source packs
-    preferred:
-      - provider: google-ai
-        product: Gemini
+    purpose: Large-context analysis of repositories, documents, logs and mixed source packs.
+    preferred_tools: [google-gemini-api]
     output_contract: analysis-artifact
 
+  - id: code.repo.inspect
+    purpose: Inspect repository structure and implementation context.
+    preferred_skills: [code.repo.inspect]
+    output_contract: repo-analysis
+
+  - id: code.issue.create
+    purpose: Create actionable engineering work items from validated requirements.
+    preferred_skills: [code.issue.create]
+    output_contract: issue-reference
+
+  - id: code.pr.open
+    purpose: Publish prepared implementation work for review.
+    preferred_skills: [code.pr.open]
+    output_contract: pull-request-reference
+
+  - id: database.query
+    purpose: Read operational application state through a governed database boundary.
+    preferred_skills: [database.query.read]
+    output_contract: normalized-data-result
+
+  - id: database.write
+    purpose: Mutate operational application state through an explicit governed contract.
+    output_contract: mutation-result
+
+  - id: database.vector-search
+    purpose: Retrieve semantic context from supported operational knowledge stores.
+    output_contract: ranked-context
+
   - id: creative.image.local
-    purpose: Reproducible local image generation and controlled workflows
-    preferred:
-      - provider: local
-        product: ComfyUI
-    fallbacks:
-      - provider: google-ai
-        product: image-generation
-      - provider: fal
+    purpose: Reproducible local image generation and controlled workflows.
+    preferred_skills: [media.image.generate.local]
+    output_contract: creative-asset
+
+  - id: creative.image.cloud
+    purpose: Cloud image generation when speed or provider-specific quality dominates.
+    preferred_skills: [media.image.generate.cloud]
     output_contract: creative-asset
 
   - id: creative.video.cloud
-    purpose: Cloud video generation for ads, UGC, B-roll and social assets
-    preferred:
-      - provider: google-ai
-        product: Google Flow
-      - provider: higgsfield
+    purpose: Cloud video generation for ads, UGC, B-roll and social assets.
+    preferred_skills: [media.product-ad.fast]
     output_contract: creative-asset
 
+  - id: creative.audio.cloud
+    purpose: External audio generation when specialist provider capability is required.
+    output_contract: audio-asset
+
   - id: creative.music
-    purpose: Background music, sonic identity and campaign audio
-    preferred:
-      - provider: google-ai
-        product: Google Flow Music
+    purpose: Background music, sonic identity and campaign audio.
     output_contract: audio-asset
 
   - id: dev.prototype-ai
-    purpose: Prompt, model, structured-output and tool-calling prototyping
-    preferred:
-      - provider: google-ai
-        product: Google AI Studio
+    purpose: Prompt, model, structured-output and tool-calling prototyping.
+    preferred_tools: [google-gemini-api]
     output_contract: validated-prototype
 
   - id: dev.async-coding
-    purpose: Delegated repository work with isolated task ownership
-    preferred:
-      - provider: google-ai
-        product: Jules
-      - provider: google-ai
-        product: Google Antigravity
-    fallbacks:
-      - provider: local
-        product: Claude Code
-      - provider: local
-        product: Codex
+    purpose: Delegated repository work with isolated task ownership and reviewable evidence.
+    preferred_skills: [code.implement.scoped]
     output_contract: reviewed-diff
 
   - id: storage.files
-    purpose: Large-file and document storage outside Git repositories
-    preferred:
-      - provider: google-ai
-        product: Google Drive
+    purpose: Large-file and document storage outside Git repositories.
+    preferred_skills: [storage.file.archive]
+    output_contract: durable-file-reference
     rules:
       - GitHub remains canonical for source code and versioned engineering docs.
       - Operational application state belongs in databases such as Supabase/Postgres.
       - Secrets require a dedicated governed secret boundary, not arbitrary Drive folders.
-    output_contract: durable-file-reference
 
 routing_principles:
-  - "Choose a capability first, then a provider."
+  - "Resolve agent goal -> capability -> skill -> policy -> tool -> endpoint."
+  - "Choose a capability and purpose-driven skill before choosing a provider."
   - "Providers are replaceable implementations behind stable Ginkgo contracts."
   - "Prefer local when reproducibility, privacy or marginal cost dominates."
   - "Prefer external when quality, speed, context size or multimodal capability dominates."
   - "Do not infer API entitlement from a consumer subscription."
+  - "A web-only product must remain marked human-assisted until a real autonomous integration exists."
