@@ -1,5 +1,5 @@
-version: 1
-updated_at: 2026-08-17
+version: 2
+updated_at: 2026-08-18
 
 policies:
   - id: provider-selection-default
@@ -49,3 +49,53 @@ policies:
       - supervised means an agent can execute but a human remains in the control loop.
       - connector means execution occurs through a governed connected app/tool.
       - human_assisted means a human must operate or approve the surface.
+
+  - id: marketplace-read-safety
+    purpose: Govern read-only marketplace skills independently of provider implementation.
+    applies_to: [commerce.catalog.search, commerce.catalog.read, commerce.pricing.read, commerce.inventory.read, commerce.orders.read]
+    rules:
+      - Marketplace identity is an explicit routing constraint and must never change via fallback.
+      - A read skill never inherits write, publish, cancel, fulfill, price-update or inventory-update authority.
+      - Minimize PII; order contracts expose buyer/address fields only when explicitly required and permitted.
+      - Every live observation records marketplace, provider/tool, observed_at and source identifiers in provenance.
+      - FEATURE, PRE_APPROVAL, DISABLED or otherwise non-routable implementations return a normalized blocked result rather than attempting live execution.
+      - No caller may provide provider credentials, endpoints or access tokens as runtime routing inputs.
+
+  - id: amazon-read-validation-gate
+    purpose: Prevent Amazon SP-API discovery metadata from being mistaken for validated execution capability.
+    applies_to: [commerce.amazon.catalog.search, commerce.amazon.pricing.read, commerce.amazon.inventory.read, commerce.amazon.orders.read]
+    rules:
+      - Logical credential references are not implementation evidence.
+      - Remain FEATURE and routing_eligible=false until a repository-backed read adapter exists.
+      - Promotion requires contract tests, normalized errors/retry, secret scan and at least one governed read-only live E2E recorded in GitHub.
+      - Promotion level must match the exact capability demonstrated; evidence for catalog does not automatically validate pricing, inventory or orders.
+
+  - id: shopee-pre-approval-freeze
+    purpose: Preserve the external approval boundary for Shopee Open Platform work.
+    applies_to: [commerce.shopee.catalog.read, commerce.shopee.orders.read, commerce.shopee.product.normalize]
+    external_gate: shopee_business_approval
+    rules:
+      - Lifecycle ceiling is FEATURE/PRE_APPROVAL until Shopee business approval is granted.
+      - Offline adapters, fixtures and tests may improve implementation evidence but do not authorize live routing.
+      - First post-approval provider validation must be read-only and sanitized before any broader promotion.
+      - No real credentials are stored in Git.
+      - Marketplace mutations, auto-publish and purchase execution remain outside this batch and blocked by separate policy.
+
+  - id: commerce-evaluation-gates-v1
+    purpose: Apply the current deterministic Amazon-target commerce economics without allowing callers to weaken thresholds.
+    applies_to: [commerce.product.evaluate]
+    thresholds:
+      minimum_multiplier: 5.0
+      minimum_operating_margin_pct: 60
+      minimum_contribution_brl: 30
+    decision_semantics:
+      approved: all required deterministic gates passed; no side effect is authorized
+      rejected: at least one hard gate failed
+      manual_review: required evidence or economics are incomplete
+    rules:
+      - Thresholds are policy-owned and cannot be supplied or overridden by callers.
+      - Economic values must come from source data and deterministic formulas; LLM output is not a numeric source.
+      - Missing required economics cannot be silently estimated to obtain approval.
+      - Product identity/matching evidence and compliance gates are evaluated before economics where applicable.
+      - APPROVED never authorizes listing creation, publication, purchase, price mutation, inventory mutation or fulfillment.
+      - Changes to these thresholds require a governed policy change with evidence and review.
