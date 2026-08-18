@@ -1,9 +1,9 @@
-version: 3
+version: 4
 updated_at: 2026-08-18
 
-# Capability = what the system can accomplish.
-# Skill = purpose-driven reusable action.
-# Tool/provider = replaceable implementation.
+# Capability = provider-agnostic public semantic contract.
+# Skill/binding = internal implementation possibility declared for Domain Router discovery.
+# Tool/provider = replaceable implementation metadata; never caller routing authority.
 
 capabilities:
   - id: knowledge.research
@@ -93,36 +93,60 @@ capabilities:
 
   - id: commerce.catalog.search
     purpose: Search a marketplace catalog through a normalized read-only boundary.
-    preferred_skills: [commerce.amazon.catalog.search]
     routing_key: marketplace_ref
+    bindings:
+      - skill_id: amazon-spapi.catalog.search
+        when:
+          marketplace: amazon
+        routing_eligible: false
     output_contract: marketplace-catalog-search-result
     lifecycle_ceiling: FEATURE
 
   - id: commerce.catalog.read
     purpose: Read product/catalog state for an explicitly selected marketplace or authorized shop.
-    preferred_skills: [commerce.shopee.catalog.read]
     routing_key: marketplace_ref
+    bindings:
+      - skill_id: shopee-open-api.catalog.read
+        when:
+          marketplace: shopee
+        routing_eligible: false
     output_contract: marketplace-catalog-result
     lifecycle_ceiling: FEATURE
 
   - id: commerce.pricing.read
     purpose: Read current marketplace pricing and offer observations without mutation.
-    preferred_skills: [commerce.amazon.pricing.read]
     routing_key: marketplace_ref
+    bindings:
+      - skill_id: amazon-spapi.pricing.read
+        when:
+          marketplace: amazon
+        routing_eligible: false
     output_contract: marketplace-pricing-result
     lifecycle_ceiling: FEATURE
 
   - id: commerce.inventory.read
     purpose: Read seller inventory state without mutation.
-    preferred_skills: [commerce.amazon.inventory.read]
     routing_key: marketplace_ref
+    bindings:
+      - skill_id: amazon-spapi.inventory.read
+        when:
+          marketplace: amazon
+        routing_eligible: false
     output_contract: marketplace-inventory-result
     lifecycle_ceiling: FEATURE
 
   - id: commerce.orders.read
     purpose: Read marketplace order state through a PII-minimized normalized contract.
-    preferred_skills: [commerce.amazon.orders.read, commerce.shopee.orders.read]
     routing_key: marketplace_ref
+    bindings:
+      - skill_id: amazon-spapi.orders.read
+        when:
+          marketplace: amazon
+        routing_eligible: false
+      - skill_id: shopee-open-api.orders.read
+        when:
+          marketplace: shopee
+        routing_eligible: false
     output_contract: marketplace-orders-result
     lifecycle_ceiling: FEATURE
     rules:
@@ -130,26 +154,36 @@ capabilities:
 
   - id: commerce.product.normalize
     purpose: Normalize provider-specific product payloads into a stable commerce product shape.
-    preferred_skills: [commerce.shopee.product.normalize]
     routing_key: source_marketplace
+    bindings:
+      - skill_id: shopee-open-api.product.normalize
+        when:
+          marketplace: shopee
+        routing_eligible: false
     output_contract: commerce-product
     lifecycle_ceiling: FEATURE
 
   - id: commerce.product.evaluate
     purpose: Apply deterministic matching, compliance and economic gates to a normalized candidate.
-    preferred_skills: [commerce.product.evaluate]
+    bindings:
+      - skill_id: commerce.product.evaluate
+        provider_neutral: true
+        routing_eligible: false
     output_contract: commerce-product-evaluation
     lifecycle_ceiling: PROTOTYPE
     rules:
-      - An APPROVED evaluation is advisory and never authorizes publication or purchase.
-      - Economic thresholds are policy-injected and cannot be overridden by callers.
+      - An APPROVED economic evaluation is advisory and is not the P0 Approval contract.
+      - An APPROVED economic evaluation never authorizes publication, purchase or other side effects.
+      - Economic thresholds are policy-owned and cannot be overridden by callers.
 
 routing_principles:
-  - "Resolve caller -> skill runtime contract -> capability bus -> router/policy -> tool/adapter -> normalized result."
-  - "Choose a capability and purpose-driven skill before choosing a provider."
-  - "Providers are replaceable implementations behind stable Ginkgo contracts."
-  - "Prefer local when reproducibility, privacy or marginal cost dominates."
-  - "Prefer external when quality, speed, context size or multimodal capability dominates."
+  - "Canonical runtime path: Caller -> CapabilityRequest -> Capability Bus -> Domain Router -> skill/version -> adapter -> provider -> CapabilityResult."
+  - "Library declares what exists, what is discoverable and applicable constraints; it does not perform runtime routing."
+  - "The Domain Router owns runtime capability-to-binding resolution and eligibility checks."
+  - "TaskOps -> Executor Router -> Human | n8n | Hermes | OpenClaw | Sylvia is a separate operational path."
+  - "DISCOVERABLE != ROUTING_ELIGIBLE != PRODUCTION_ELIGIBLE."
+  - "Providers are replaceable implementations behind adapters and stable Ginkgo contracts."
+  - "GitHub is source of truth for registry/architecture; PostgreSQL is source of truth for runtime state."
   - "Do not infer API entitlement from a consumer subscription."
   - "A web-only product must remain marked human-assisted until a real autonomous integration exists."
   - "Marketplace selection is a routing constraint; never silently cross marketplaces."
