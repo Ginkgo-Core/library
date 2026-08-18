@@ -1,10 +1,11 @@
-version: 2
+version: 3
 updated_at: 2026-08-18
 
 policies:
   - id: provider-selection-default
-    purpose: Select the best implementation for a requested capability.
-    decision_inputs: [quality, cost, latency, privacy, reproducibility, quota, availability]
+    policy_class: domain_routing_policy
+    purpose: Constrain Domain Router implementation selection for a requested provider-agnostic capability.
+    decision_inputs: [capability_semantics, lifecycle, quality, cost, latency, privacy, reproducibility, quota, availability, external_gates]
     default_weights:
       quality: 0.35
       cost: 0.25
@@ -12,14 +13,19 @@ policies:
       privacy: 0.15
       reproducibility: 0.10
     rules:
-      - Prefer local when privacy, reproducibility or marginal cost dominate.
-      - Prefer external when capability, speed, context size or specialist quality dominate.
+      - Domain Router is the only runtime component authorized to resolve capability to skill/version, adapter and provider.
+      - Candidate implementations must preserve the requested capability semantics and satisfy lifecycle, permission, marketplace and external-gate constraints before provider scoring.
+      - Provider scoring never authorizes fallback; fallback is separately governed by fallback_policy.
+      - Prefer local when privacy, reproducibility or marginal cost dominate only among already eligible same-semantics implementations.
+      - Prefer external when capability, speed, context size or specialist quality dominate only among already eligible same-semantics implementations.
       - Never infer API entitlement from a consumer subscription.
       - Record provider/model/version/cost when an output becomes an operational artifact.
 
   - id: external-write-safety
+    policy_class: capability_policy
     purpose: Govern mutations outside the local machine.
-    applies_to: [github, google-drive, supabase, external-apis]
+    applies_to:
+      resource_classes: [github, google-drive, supabase, external-apis]
     rules:
       - Use the narrowest available credential scope.
       - Distinguish read, create, update, delete and irreversible actions.
@@ -27,6 +33,7 @@ policies:
       - Never store credentials in Git.
 
   - id: knowledge-promotion
+    policy_class: capability_policy
     purpose: Prevent unverified clippings from becoming operational truth.
     rules:
       - Raw sources remain immutable with provenance.
@@ -35,6 +42,7 @@ policies:
       - Promotions must preserve source links and confidence.
 
   - id: cost-control
+    policy_class: capability_policy
     purpose: Avoid accidental spend from agentic routing.
     rules:
       - Every paid API must expose a cost model or unknown-cost marker.
@@ -43,53 +51,93 @@ policies:
       - Quotas and prices are volatile facts and must not be hard-coded into product logic.
 
   - id: execution-mode-truth
-    purpose: Prevent agents from assuming automation where only a UI exists.
+    policy_class: discovery_policy
+    purpose: Prevent discovery metadata from implying automation where only a UI exists.
     rules:
       - autonomous means callable without a human interaction step.
       - supervised means an agent can execute but a human remains in the control loop.
       - connector means execution occurs through a governed connected app/tool.
       - human_assisted means a human must operate or approve the surface.
+      - DISCOVERABLE does not imply ROUTING_ELIGIBLE or PRODUCTION_ELIGIBLE.
 
   - id: marketplace-read-safety
-    purpose: Govern read-only marketplace skills independently of provider implementation.
-    applies_to: [commerce.catalog.search, commerce.catalog.read, commerce.pricing.read, commerce.inventory.read, commerce.orders.read]
+    policy_class: capability_policy
+    purpose: Govern read-only marketplace capabilities independently of provider implementation.
+    applies_to:
+      capabilities: [commerce.catalog.search, commerce.catalog.read, commerce.pricing.read, commerce.inventory.read, commerce.orders.read]
     rules:
       - Marketplace identity is an explicit routing constraint and must never change via fallback.
-      - A read skill never inherits write, publish, cancel, fulfill, price-update or inventory-update authority.
+      - A read capability never inherits write, publish, cancel, fulfill, price-update or inventory-update authority.
       - Minimize PII; order contracts expose buyer/address fields only when explicitly required and permitted.
       - Every live observation records marketplace, provider/tool, observed_at and source identifiers in provenance.
       - FEATURE, PRE_APPROVAL, DISABLED or otherwise non-routable implementations return a normalized blocked result rather than attempting live execution.
-      - No caller may provide provider credentials, endpoints or access tokens as runtime routing inputs.
+      - No caller may provide provider credentials, endpoints, adapter choice or access tokens as runtime routing inputs.
 
   - id: amazon-read-validation-gate
+    policy_class: binding_provider_policy
     purpose: Prevent Amazon SP-API discovery metadata from being mistaken for validated execution capability.
-    applies_to: [commerce.amazon.catalog.search, commerce.amazon.pricing.read, commerce.amazon.inventory.read, commerce.amazon.orders.read]
+    applies_to:
+      bindings: [amazon-spapi.catalog.search, amazon-spapi.pricing.read, amazon-spapi.inventory.read, amazon-spapi.orders.read]
+      providers: [amazon-selling-partner]
+      tools: [amazon-sp-api]
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
     rules:
       - Logical credential references are not implementation evidence.
-      - Remain FEATURE and routing_eligible=false until a repository-backed read adapter exists.
+      - Remain FEATURE and routing_eligible=false until an adapter implementation plus governed evidence exists.
       - Promotion requires contract tests, normalized errors/retry, secret scan and at least one governed read-only live E2E recorded in GitHub.
       - Promotion level must match the exact capability demonstrated; evidence for catalog does not automatically validate pricing, inventory or orders.
 
   - id: shopee-pre-approval-freeze
-    purpose: Preserve the external approval boundary for Shopee Open Platform work.
-    applies_to: [commerce.shopee.catalog.read, commerce.shopee.orders.read, commerce.shopee.product.normalize]
-    external_gate: shopee_business_approval
+    policy_class: external_gate_requirement
+    purpose: Preserve the external business-approval boundary for Shopee Open Platform bindings.
+    applies_to:
+      bindings: [shopee-open-api.catalog.read, shopee-open-api.orders.read, shopee-open-api.product.normalize]
+      providers: [shopee-open-platform]
+      tools: [shopee-open-api, amazon-ops-shopee-normalizer]
+    external_gate_requirement:
+      id: shopee_business_approval
+      required: true
+      registry_observed_state: UNKNOWN
+      observation: pending_evidence
+      runtime_state_source: PostgreSQL
+      registry_state_is_runtime_authority: false
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+    live_execution: blocked
     rules:
-      - Lifecycle ceiling is FEATURE/PRE_APPROVAL until Shopee business approval is granted.
-      - Offline adapters, fixtures and tests may improve implementation evidence but do not authorize live routing.
-      - First post-approval provider validation must be read-only and sanitized before any broader promotion.
+      - Lifecycle ceiling is FEATURE/PRE_APPROVAL until Shopee business approval is CLEAR in runtime policy state and governed live evidence exists.
+      - Offline adapters, fixtures and CI may improve implementation evidence but do not authorize live routing.
+      - First post-gate provider validation must be read-only and sanitized before any broader promotion.
       - No real credentials are stored in Git.
       - Marketplace mutations, auto-publish and purchase execution remain outside this batch and blocked by separate policy.
+      - Human Approval cannot clear or replace the Shopee External Gate.
+
+  - id: commerce-approval-boundary
+    policy_class: approval_requirement
+    purpose: Keep P0 human/business Approval separate from capability discovery, provider eligibility, External Gates and domain decisions.
+    applies_to:
+      capabilities: [commerce.catalog.search, commerce.catalog.read, commerce.pricing.read, commerce.inventory.read, commerce.orders.read, commerce.product.normalize, commerce.product.evaluate]
+    default_requirement:
+      approval_required: false
+    rules:
+      - approval_required=false does not make a blocked binding routing-eligible.
+      - Approval and External Gate have independent contracts and state machines.
+      - Approval=APPROVED cannot clear an External Gate that is UNKNOWN, BLOCKED or EXPIRED.
+      - A future side-effecting commerce capability must declare its own approval policy rather than inheriting read/evaluation behavior.
 
   - id: commerce-evaluation-gates-v1
-    purpose: Apply the current deterministic Amazon-target commerce economics without allowing callers to weaken thresholds.
-    applies_to: [commerce.product.evaluate]
+    policy_class: capability_policy
+    purpose: Apply deterministic commerce economics without allowing callers to weaken thresholds.
+    applies_to:
+      capabilities: [commerce.product.evaluate]
     thresholds:
       minimum_multiplier: 5.0
       minimum_operating_margin_pct: 60
       minimum_contribution_brl: 30
+      caller_may_override: false
     decision_semantics:
-      approved: all required deterministic gates passed; no side effect is authorized
+      approved: all required deterministic economic gates passed; no side effect is authorized and this is not P0 Approval
       rejected: at least one hard gate failed
       manual_review: required evidence or economics are incomplete
     rules:
