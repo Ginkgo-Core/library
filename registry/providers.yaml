@@ -1,5 +1,5 @@
-version: 1
-updated_at: 2026-08-17
+version: 2
+updated_at: 2026-08-18
 
 providers:
   - id: google-ai
@@ -79,3 +79,33 @@ providers:
     access_modes: [api]
     capabilities: [image-generation, video-generation, audio, model-inference]
     canonical_role: provider-behind-capability-router
+
+  - id: amazon-selling-partner
+    name: Amazon Selling Partner API
+    kind: external-marketplace-provider
+    status: planned-unvalidated
+    access_modes: [api]
+    capabilities: [catalog-search, pricing-read, inventory-read, orders-read]
+    canonical_role: amazon-marketplace-read-provider
+    source_of_truth: Scale-Characters/amazon-ops
+    rules:
+      - "Logical credential references exist, but no repository-backed SP-API adapter or read-only E2E evidence exists yet."
+      - "Remain non-routable until implementation and live read evidence are registered in GitHub."
+      - "Read skills never inherit marketplace mutation permissions."
+    verified_at: 2026-08-18
+
+  - id: shopee-open-platform
+    name: Shopee Open Platform
+    kind: external-marketplace-provider
+    status: pre-approval
+    access_modes: [api]
+    capabilities: [authorized-shop-catalog-read, authorized-shop-orders-read]
+    canonical_role: authorized-shopee-shop-provider
+    source_of_truth: Scale-Characters/amazon-ops#2
+    external_gate: shopee_business_approval
+    rules:
+      - "PRE-APPROVAL freeze: no live routing until Shopee business approval and a governed read-only validation."
+      - "No real credentials in Git."
+      - "Mutation authorization is a separate future gate and remains blocked."
+      - "This provider is for the authorized shop context; do not treat it as a generic third-party catalog search provider."
+    verified_at: 2026-08-18
