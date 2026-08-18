@@ -1,5 +1,5 @@
-version: 1
-updated_at: 2026-08-17
+version: 2
+updated_at: 2026-08-18
 
 fallbacks:
   - capability: knowledge.research
@@ -12,8 +12,6 @@ fallbacks:
       - provider_unavailable
 
   # Wave 10: capabilities criativas específicas NÃO têm fallback cruzado local↔cloud.
-  # Intenção do caller (privacidade/custo/residência) nunca é violada em silêncio;
-  # ausência de opção VALIDATED produz erro normalizado NO_VALIDATED_PROVIDER.
   - capability: creative.image.local
     order:
       - comfyui-local
@@ -24,7 +22,7 @@ fallbacks:
 
   - capability: creative.image.cloud
     order:
-      - fal-api          # somente quando VALIDATED; gemini-image permanece EXPERIMENTAL
+      - fal-api
     fail_when:
       - provider_unavailable
       - quota_exhausted
@@ -59,3 +57,6 @@ rules:
   - Provider-specific features may require a degraded-result marker.
   - Do not silently switch to a higher-cost provider without policy evaluation.
   - A missing safe fallback is preferable to an unsafe implicit fallback.
+  - Marketplace-specific commerce skills never fallback across marketplaces.
+  - FEATURE, PRE_APPROVAL, DISABLED and non-routable marketplace tools are never fallback candidates.
+  - Read-only commerce skills never fallback to a tool that requires mutation scope.
