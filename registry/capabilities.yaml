@@ -1,5 +1,5 @@
-version: 2
-updated_at: 2026-08-17
+version: 3
+updated_at: 2026-08-18
 
 # Capability = what the system can accomplish.
 # Skill = purpose-driven reusable action.
@@ -91,11 +91,65 @@ capabilities:
       - Operational application state belongs in databases such as Supabase/Postgres.
       - Secrets require a dedicated governed secret boundary, not arbitrary Drive folders.
 
+  - id: commerce.catalog.search
+    purpose: Search a marketplace catalog through a normalized read-only boundary.
+    preferred_skills: [commerce.amazon.catalog.search]
+    routing_key: marketplace_ref
+    output_contract: marketplace-catalog-search-result
+    lifecycle_ceiling: FEATURE
+
+  - id: commerce.catalog.read
+    purpose: Read product/catalog state for an explicitly selected marketplace or authorized shop.
+    preferred_skills: [commerce.shopee.catalog.read]
+    routing_key: marketplace_ref
+    output_contract: marketplace-catalog-result
+    lifecycle_ceiling: FEATURE
+
+  - id: commerce.pricing.read
+    purpose: Read current marketplace pricing and offer observations without mutation.
+    preferred_skills: [commerce.amazon.pricing.read]
+    routing_key: marketplace_ref
+    output_contract: marketplace-pricing-result
+    lifecycle_ceiling: FEATURE
+
+  - id: commerce.inventory.read
+    purpose: Read seller inventory state without mutation.
+    preferred_skills: [commerce.amazon.inventory.read]
+    routing_key: marketplace_ref
+    output_contract: marketplace-inventory-result
+    lifecycle_ceiling: FEATURE
+
+  - id: commerce.orders.read
+    purpose: Read marketplace order state through a PII-minimized normalized contract.
+    preferred_skills: [commerce.amazon.orders.read, commerce.shopee.orders.read]
+    routing_key: marketplace_ref
+    output_contract: marketplace-orders-result
+    lifecycle_ceiling: FEATURE
+    rules:
+      - Never fallback across marketplaces.
+
+  - id: commerce.product.normalize
+    purpose: Normalize provider-specific product payloads into a stable commerce product shape.
+    preferred_skills: [commerce.shopee.product.normalize]
+    routing_key: source_marketplace
+    output_contract: commerce-product
+    lifecycle_ceiling: FEATURE
+
+  - id: commerce.product.evaluate
+    purpose: Apply deterministic matching, compliance and economic gates to a normalized candidate.
+    preferred_skills: [commerce.product.evaluate]
+    output_contract: commerce-product-evaluation
+    lifecycle_ceiling: PROTOTYPE
+    rules:
+      - An APPROVED evaluation is advisory and never authorizes publication or purchase.
+      - Economic thresholds are policy-injected and cannot be overridden by callers.
+
 routing_principles:
-  - "Resolve agent goal -> capability -> skill -> policy -> tool -> endpoint."
+  - "Resolve caller -> skill runtime contract -> capability bus -> router/policy -> tool/adapter -> normalized result."
   - "Choose a capability and purpose-driven skill before choosing a provider."
   - "Providers are replaceable implementations behind stable Ginkgo contracts."
   - "Prefer local when reproducibility, privacy or marginal cost dominates."
   - "Prefer external when quality, speed, context size or multimodal capability dominates."
   - "Do not infer API entitlement from a consumer subscription."
   - "A web-only product must remain marked human-assisted until a real autonomous integration exists."
+  - "Marketplace selection is a routing constraint; never silently cross marketplaces."
