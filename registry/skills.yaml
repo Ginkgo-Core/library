@@ -96,20 +96,37 @@ skills:
   - id: media.image.generate.local
     purpose: Generate a reproducible local image when privacy, control or marginal cost dominate.
     capability: creative.image.local
+    maturity: S2-INTEGRATED          # promoted Wave 10; manifest: ginkgo-agents/skills/media/image/generate.local
     inputs: [prompt, negative_prompt, preset, seed]
     outputs: [creative_asset, generation_metadata]
     preferred_tools: [comfyui-local]
-    fallbacks: [media.image.generate.cloud]
+    fallbacks: []                    # local capability is mandatory — NO silent fallback to cloud (Waves 7-10 invariant)
     use_when: [privacy_required, reproducibility_required, local_gpu_available]
-    avoid_when: [local_gpu_busy, cloud_quality_required]
+    avoid_when: [local_gpu_busy, system_ram_below_2gib_free]
     human_approval: false
+    evidence: [ginkgo-pyre#3, ai-stack#12, ginkgo-pyre#4]
+
+  - id: media.image.generate
+    purpose: Generate an image using the best VALIDATED provider compatible with request constraints; caller never selects provider/tool/model.
+    capability: resolved-by-router   # Pyre Routing V3 resolves creative.image.local|cloud among VALIDATED providers
+    maturity: S1-SKILL               # Wave 10 generic E2E + routing tests
+    inputs: [prompt, negative_prompt, constraints, generation, metadata]
+    forbidden_inputs: [provider, tool, model]
+    outputs: [creative_asset]
+    preferred_tools: []              # decided by policy; today only comfyui-local is VALIDATED
+    fallbacks: []                    # explicit-only; no VALIDATED option -> NO_VALIDATED_PROVIDER error
+    human_approval: false
+    executor: n8n workflow creative-image-generate-v1
 
   - id: media.image.generate.cloud
     purpose: Generate a cloud image when speed or provider-specific quality dominates.
     capability: creative.image.cloud
+    maturity: F2-PROTOTYPE           # adapter+health+normalized errors work; NO successful paid E2E yet (quota blocker)
+    production_eligible: false
     inputs: [prompt, references, aspect_ratio, quality]
     outputs: [creative_asset, provider_metadata, cost]
-    preferred_tools: [fal-api]
+    preferred_tools: [fal-api]       # operational preference when credential exists
+    prototyped_tools: [gemini-image] # implemented behind Pyre (EXPERIMENTAL provider status)
     human_approval: false
 
   - id: media.product-ad.fast

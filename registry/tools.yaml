@@ -75,6 +75,24 @@ tools:
     auth:
       type: local-trusted-boundary
     status: validated
+    validation_status: VALIDATED     # Wave 10 provider-status (Atlas §20b); E2E Waves 7-9
+
+  - id: gemini-image
+    provider: google-ai
+    kind: api
+    execution_mode: autonomous
+    capabilities: [creative.image.cloud]
+    model_pin: gemini-2.5-flash-image
+    auth:
+      type: api_key
+      credential_ref: GEMINI_API_KEY
+    billing_boundary: google-cloud-project
+    cost_estimate_usd_per_image: 0.039
+    status: experimental
+    validation_status: EXPERIMENTAL  # adapter+health OK; sem E2E pago bem-sucedido (quota 429, Wave 9)
+    rules:
+      - "Never eligible for normal production requests; explicit eval mode only."
+      - "Never an automatic fallback for local capability."
 
   - id: higgsfield-mcp
     provider: higgsfield

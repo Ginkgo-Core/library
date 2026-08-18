@@ -11,18 +11,25 @@ fallbacks:
       - no_current_sources
       - provider_unavailable
 
+  # Wave 10: capabilities criativas específicas NÃO têm fallback cruzado local↔cloud.
+  # Intenção do caller (privacidade/custo/residência) nunca é violada em silêncio;
+  # ausência de opção VALIDATED produz erro normalizado NO_VALIDATED_PROVIDER.
   - capability: creative.image.local
     order:
       - comfyui-local
-      - fal-api
     fail_when:
       - local_gpu_unavailable
       - local_runtime_unhealthy
+    no_cross_fallback: true
 
   - capability: creative.image.cloud
     order:
-      - fal-api
-      - comfyui-local
+      - fal-api          # somente quando VALIDATED; gemini-image permanece EXPERIMENTAL
+    fail_when:
+      - provider_unavailable
+      - quota_exhausted
+      - no_validated_provider
+    no_cross_fallback: true
 
   - capability: creative.video.cloud
     order:
