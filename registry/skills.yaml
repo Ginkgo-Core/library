@@ -1,5 +1,5 @@
-version: 1
-updated_at: 2026-08-17
+version: 2
+updated_at: 2026-08-18
 
 # Skills are purpose-driven agent actions.
 # They are named by intent/capability, not vendor.
@@ -96,11 +96,11 @@ skills:
   - id: media.image.generate.local
     purpose: Generate a reproducible local image when privacy, control or marginal cost dominate.
     capability: creative.image.local
-    maturity: S2-INTEGRATED          # promoted Wave 10; manifest: ginkgo-agents/skills/media/image/generate.local
+    maturity: S2-INTEGRATED
     inputs: [prompt, negative_prompt, preset, seed]
     outputs: [creative_asset, generation_metadata]
     preferred_tools: [comfyui-local]
-    fallbacks: []                    # local capability is mandatory — NO silent fallback to cloud (Waves 7-10 invariant)
+    fallbacks: []
     use_when: [privacy_required, reproducibility_required, local_gpu_available]
     avoid_when: [local_gpu_busy, system_ram_below_2gib_free]
     human_approval: false
@@ -108,25 +108,25 @@ skills:
 
   - id: media.image.generate
     purpose: Generate an image using the best VALIDATED provider compatible with request constraints; caller never selects provider/tool/model.
-    capability: resolved-by-router   # Pyre Routing V3 resolves creative.image.local|cloud among VALIDATED providers
-    maturity: S1-SKILL               # Wave 10 generic E2E + routing tests
+    capability: resolved-by-router
+    maturity: S1-SKILL
     inputs: [prompt, negative_prompt, constraints, generation, metadata]
     forbidden_inputs: [provider, tool, model]
     outputs: [creative_asset]
-    preferred_tools: []              # decided by policy; today only comfyui-local is VALIDATED
-    fallbacks: []                    # explicit-only; no VALIDATED option -> NO_VALIDATED_PROVIDER error
+    preferred_tools: []
+    fallbacks: []
     human_approval: false
     executor: n8n workflow creative-image-generate-v1
 
   - id: media.image.generate.cloud
     purpose: Generate a cloud image when speed or provider-specific quality dominates.
     capability: creative.image.cloud
-    maturity: F2-PROTOTYPE           # adapter+health+normalized errors work; NO successful paid E2E yet (quota blocker)
+    maturity: F2-PROTOTYPE
     production_eligible: false
     inputs: [prompt, references, aspect_ratio, quality]
     outputs: [creative_asset, provider_metadata, cost]
-    preferred_tools: [fal-api]       # operational preference when credential exists
-    prototyped_tools: [gemini-image] # implemented behind Pyre (EXPERIMENTAL provider status)
+    preferred_tools: [fal-api]
+    prototyped_tools: [gemini-image]
     human_approval: false
 
   - id: media.product-ad.fast
@@ -137,8 +137,218 @@ skills:
     preferred_tools: [higgsfield-mcp, fal-api]
     human_approval: false
 
+  - id: commerce.amazon.catalog.search
+    purpose: Search the Amazon catalog through a governed read-only contract without exposing SP-API internals to callers.
+    capability: commerce.catalog.search
+    lifecycle_status: FEATURE
+    maturity: F1
+    level: L1
+    autonomy_level: A1
+    inputs: [marketplace_ref, criteria, pagination]
+    forbidden_inputs: [provider, endpoint, credential, access_token, refresh_token]
+    outputs: [items, identifiers, title, brand, category, attributes, images, pagination, provenance]
+    permissions:
+      external_network: true
+      marketplace_read: [amazon.catalog]
+      marketplace_write: []
+      pii: none
+    approval_required: false
+    preferred_tools: [amazon-sp-api]
+    preferred_providers: [amazon-selling-partner]
+    fallbacks: []
+    use_when: [amazon_catalog_discovery_required, asin_resolution_required]
+    avoid_when: [inventory_required, pricing_required, orders_required, live_before_validation]
+    routing_eligible: false
+    production_eligible: false
+    evidence: [amazon-ops-main-env-refs, amazon-ops-main-plan-future-sp-api]
+
+  - id: commerce.amazon.pricing.read
+    purpose: Read Amazon pricing and offers through a normalized read-only contract.
+    capability: commerce.pricing.read
+    lifecycle_status: FEATURE
+    maturity: F1
+    level: L1
+    autonomy_level: A1
+    inputs: [marketplace_ref, identifiers, condition, pagination]
+    forbidden_inputs: [provider, endpoint, credential, access_token, refresh_token]
+    outputs: [identifier, currency, listing_price, shipping_price, landed_price, offers, observed_at, provenance]
+    permissions:
+      external_network: true
+      marketplace_read: [amazon.pricing]
+      marketplace_write: []
+      pii: none
+    approval_required: false
+    preferred_tools: [amazon-sp-api]
+    preferred_providers: [amazon-selling-partner]
+    fallbacks: []
+    use_when: [current_amazon_pricing_required, product_evaluation_needs_target_price]
+    avoid_when: [historical_series_required, inventory_required, live_before_validation]
+    routing_eligible: false
+    production_eligible: false
+    evidence: [amazon-ops-main-env-refs]
+
+  - id: commerce.amazon.inventory.read
+    purpose: Read Amazon seller inventory state without mutation.
+    capability: commerce.inventory.read
+    lifecycle_status: FEATURE
+    maturity: F1
+    level: L1
+    autonomy_level: A1
+    inputs: [marketplace_ref, scope, seller_skus, asins, pagination]
+    forbidden_inputs: [provider, endpoint, credential, access_token, refresh_token, update_quantity]
+    outputs: [sku, asin, available, reserved, inbound, condition, observed_at, provenance]
+    permissions:
+      external_network: true
+      marketplace_read: [amazon.inventory]
+      marketplace_write: []
+      pii: none
+    approval_required: false
+    preferred_tools: [amazon-sp-api]
+    preferred_providers: [amazon-selling-partner]
+    fallbacks: []
+    use_when: [seller_stock_state_required, sku_availability_required]
+    avoid_when: [catalog_discovery_required, price_required, inventory_mutation_required, live_before_validation]
+    routing_eligible: false
+    production_eligible: false
+    evidence: [amazon-ops-main-env-refs]
+
+  - id: commerce.amazon.orders.read
+    purpose: Read Amazon order state through a PII-minimized normalized contract with zero mutation authority.
+    capability: commerce.orders.read
+    lifecycle_status: FEATURE
+    maturity: F1
+    level: L1
+    autonomy_level: A1
+    inputs: [marketplace_ref, query, pagination]
+    forbidden_inputs: [provider, endpoint, credential, access_token, refresh_token, acknowledge, cancel, fulfill]
+    outputs: [orders, order_id, status, timestamps, items, totals, fulfillment_channel, pii_redaction, pagination, provenance]
+    permissions:
+      external_network: true
+      marketplace_read: [amazon.orders]
+      marketplace_write: []
+      pii: redacted
+    approval_required: false
+    preferred_tools: [amazon-sp-api]
+    preferred_providers: [amazon-selling-partner]
+    fallbacks: []
+    use_when: [amazon_order_status_required, reconciliation_requires_orders]
+    avoid_when: [fulfillment_mutation_required, unnecessary_buyer_pii, live_before_validation]
+    routing_eligible: false
+    production_eligible: false
+    evidence: [amazon-ops-main-env-refs]
+
+  - id: commerce.shopee.catalog.read
+    purpose: Read the authorized Shopee shop catalog while preserving PRE-APPROVAL freeze semantics.
+    capability: commerce.catalog.read
+    lifecycle_status: FEATURE
+    maturity: F1
+    phase: PRE_APPROVAL
+    level: L1
+    autonomy_level: A1
+    inputs: [shop_ref, query]
+    forbidden_inputs: [provider, endpoint, credential, partner_key, access_token, refresh_token, mutation]
+    outputs: [products, item_id, title, description, category_id, media, price, stock, variants, attributes, status, provenance]
+    permissions:
+      external_network: true
+      marketplace_read: [shopee.catalog]
+      marketplace_write: []
+      pii: none
+    approval_required: false
+    external_gate: shopee_business_approval
+    preferred_tools: [shopee-open-api]
+    preferred_providers: [shopee-open-platform]
+    fallbacks: []
+    use_when: [offline_fixture_validation, authorized_shop_catalog_read_after_external_gate]
+    avoid_when: [third_party_catalog_discovery, any_write, live_before_shopee_approval]
+    routing_eligible: false
+    production_eligible: false
+    evidence: [amazon-ops#2-pre-approval-freeze]
+
+  - id: commerce.shopee.orders.read
+    purpose: Read authorized Shopee shop orders while preserving PRE-APPROVAL freeze and PII minimization.
+    capability: commerce.orders.read
+    lifecycle_status: FEATURE
+    maturity: F1
+    phase: PRE_APPROVAL
+    level: L1
+    autonomy_level: A1
+    inputs: [shop_ref, query]
+    forbidden_inputs: [provider, endpoint, credential, partner_key, access_token, refresh_token, mutation, fulfill, cancel]
+    outputs: [orders, order_sn, status, items, shipment, tracking, pii_redaction, provenance]
+    permissions:
+      external_network: true
+      marketplace_read: [shopee.orders, shopee.logistics.read]
+      marketplace_write: []
+      pii: redacted
+    approval_required: false
+    external_gate: shopee_business_approval
+    preferred_tools: [shopee-open-api]
+    preferred_providers: [shopee-open-platform]
+    fallbacks: []
+    use_when: [offline_fixture_validation, authorized_shop_orders_after_external_gate]
+    avoid_when: [order_mutation, unnecessary_buyer_pii, live_before_shopee_approval]
+    routing_eligible: false
+    production_eligible: false
+    evidence: [amazon-ops#2-pre-approval-freeze]
+
+  - id: commerce.shopee.product.normalize
+    purpose: Normalize a Shopee product payload into the canonical commerce product contract.
+    capability: commerce.product.normalize
+    lifecycle_status: FEATURE
+    maturity: F1
+    phase: PRE_APPROVAL
+    level: L1
+    autonomy_level: A1
+    inputs: [shop_ref, raw_product, provenance]
+    forbidden_inputs: [provider, endpoint, credential, mutation, evaluation_thresholds]
+    outputs: [commerce_product]
+    permissions:
+      external_network: false
+      marketplace_read: []
+      marketplace_write: []
+      pii: none
+    approval_required: false
+    external_gate: shopee_business_approval
+    preferred_tools: [amazon-ops-shopee-normalizer]
+    preferred_providers: [local]
+    fallbacks: []
+    use_when: [shopee_payload_requires_canonical_shape, offline_fixture_validation]
+    avoid_when: [non_shopee_source, product_matching_required, economic_evaluation_required]
+    routing_eligible: false
+    production_eligible: false
+    evidence: [amazon-ops#2-normalize_product-tests]
+
+  - id: commerce.product.evaluate
+    purpose: Apply deterministic match, compliance and economic gates to a normalized commerce candidate and return an advisory decision.
+    capability: commerce.product.evaluate
+    lifecycle_status: PROTOTYPE
+    maturity: F2
+    level: L2
+    autonomy_level: A1
+    inputs: [candidate, target_marketplace, target_price, delivered_source_cost, matching_evidence, cost_components]
+    forbidden_inputs: [provider, tool, minimum_multiplier, minimum_operating_margin_pct, minimum_contribution, auto_publish, auto_purchase]
+    outputs: [decision, reasons, gates, multiplier, operating_margin_pct, estimated_contribution_brl, missing_inputs, risk_flags, provenance]
+    permissions:
+      external_network: false
+      marketplace_read: []
+      marketplace_write: []
+      pii: none
+    approval_required: false
+    policy: commerce-evaluation-gates-v1
+    preferred_tools: [amazon-ops-product-evaluator]
+    preferred_providers: [local]
+    fallbacks: []
+    use_when: [normalized_candidate_requires_evaluation, target_price_and_delivered_cost_available]
+    avoid_when: [caller_wants_threshold_override, caller_expects_publish_or_purchase_authorization]
+    routing_eligible: false
+    production_eligible: false
+    evidence: [amazon-ops-main-deterministic-comparison, amazon-ops#1-real-rejection, amazon-ops#2-v1-gate-tests]
+
 principles:
   - Name skills by purpose, not by vendor.
   - A skill must have explicit inputs, outputs, permissions and intended result.
   - A clipping becomes a skill only after a reproducible action has been validated.
   - Human-assisted surfaces must remain marked as such until an actual autonomous integration exists.
+  - New contracts use approval_required; human_approval remains a legacy compatibility field for existing records.
+  - Marketplace skills never silently fallback across marketplaces.
+  - FEATURE and PRE_APPROVAL records are discoverable metadata, not routable operational skills.
