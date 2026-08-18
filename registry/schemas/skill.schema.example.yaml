@@ -1,0 +1,25 @@
+# Example contract shape for future validation tooling.
+# This is documentation, not yet a JSON Schema implementation.
+
+id: string
+purpose: string
+capability: string
+inputs:
+  - string
+outputs:
+  - string
+preferred_tools:
+  - string
+fallbacks:
+  - string
+permissions:
+  external_network: boolean
+  write_files: boolean
+  send_messages: boolean
+human_approval: false | true | supervised
+cost_tier: low | medium | high | unknown
+use_when:
+  - string
+avoid_when:
+  - string
+status: candidate | experimental | validated | production | deprecated

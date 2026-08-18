@@ -1,0 +1,135 @@
+version: 1
+updated_at: 2026-08-17
+
+# Concrete execution surfaces known to the Arsenal.
+# Secrets are never stored here; only logical credential references.
+
+tools:
+  - id: google-gemini-api
+    provider: google-ai
+    kind: api
+    execution_mode: autonomous
+    capabilities: [reasoning.long-context, knowledge.research]
+    auth:
+      type: api_key
+      credential_ref: GOOGLE_GEMINI_API_KEY
+    billing_boundary: google-cloud-project
+    status: available-when-api-billing-enabled
+
+  - id: google-deep-research-ui
+    provider: google-ai
+    kind: web-ui
+    execution_mode: human_assisted
+    capabilities: [knowledge.research]
+    auth:
+      type: account_session
+      credential_ref: GOOGLE_AI_PRO_ACCOUNT
+    status: available
+
+  - id: google-notebooklm
+    provider: google-ai
+    kind: web-ui
+    execution_mode: human_assisted
+    capabilities: [knowledge.notebook]
+    auth:
+      type: account_session
+      credential_ref: GOOGLE_AI_PRO_ACCOUNT
+    status: available
+
+  - id: google-drive-connector
+    provider: google-ai
+    kind: connector
+    execution_mode: connector
+    capabilities: [storage.files]
+    auth:
+      type: oauth
+      credential_ref: GOOGLE_DRIVE_CONNECTION
+    status: available
+
+  - id: github-api
+    provider: github
+    kind: api
+    execution_mode: autonomous
+    capabilities: [code.repo.inspect, code.issue.create, code.pr.open, code.review]
+    auth:
+      type: app_or_token
+      credential_ref: GITHUB_CONNECTION
+    status: available
+
+  - id: supabase-api
+    provider: supabase
+    kind: api
+    execution_mode: autonomous
+    capabilities: [database.query, database.write, database.vector-search]
+    auth:
+      type: project_credentials
+      credential_ref: SUPABASE_PROJECT_CONNECTION
+    status: available
+
+  - id: comfyui-local
+    provider: local
+    kind: http-api
+    execution_mode: autonomous
+    capabilities: [creative.image.local]
+    endpoint_ref: comfyui-local-api
+    auth:
+      type: local-trusted-boundary
+    status: validated
+    validation_status: VALIDATED     # Wave 10 provider-status (Atlas §20b); E2E Waves 7-9
+
+  - id: gemini-image
+    provider: google-ai
+    kind: api
+    execution_mode: autonomous
+    capabilities: [creative.image.cloud]
+    model_pin: gemini-2.5-flash-image
+    auth:
+      type: api_key
+      credential_ref: GEMINI_API_KEY
+    billing_boundary: google-cloud-project
+    cost_estimate_usd_per_image: 0.039
+    status: experimental
+    validation_status: EXPERIMENTAL  # adapter+health OK; sem E2E pago bem-sucedido (quota 429, Wave 9)
+    rules:
+      - "Never eligible for normal production requests; explicit eval mode only."
+      - "Never an automatic fallback for local capability."
+
+  - id: higgsfield-mcp
+    provider: higgsfield
+    kind: mcp
+    execution_mode: autonomous
+    capabilities: [creative.video.cloud, creative.image.cloud]
+    auth:
+      type: account_connection
+      credential_ref: HIGGSFIELD_CONNECTION
+    status: curated
+
+  - id: fal-api
+    provider: fal
+    kind: api
+    execution_mode: autonomous
+    capabilities: [creative.image.cloud, creative.video.cloud, creative.audio.cloud]
+    auth:
+      type: api_key
+      credential_ref: FAL_API_KEY
+    status: available
+
+  - id: claude-code-local
+    provider: local
+    kind: cli
+    execution_mode: supervised
+    capabilities: [dev.async-coding]
+    status: validated
+
+  - id: codex-local
+    provider: local
+    kind: cli
+    execution_mode: supervised
+    capabilities: [dev.async-coding]
+    status: available
+
+rules:
+  - Never expose credential values through this registry.
+  - execution_mode must describe what is truly automatable today.
+  - A web-only product must not be advertised to agents as an autonomous API.
+  - Tools are replaceable implementations of skills/capabilities, never product-level dependencies by default.

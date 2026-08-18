@@ -1,0 +1,66 @@
+version: 1
+updated_at: 2026-08-17
+
+# Endpoint registry centralizes execution surfaces so skills do not hard-code volatile URLs.
+
+endpoints:
+  - id: comfyui-local-api
+    tool: comfyui-local
+    transport: http
+    base_ref: COMFYUI_LOCAL_BASE_URL
+    default_value: http://127.0.0.1:8188
+    operations:
+      - id: system-stats
+        method: GET
+        path: /system_stats
+        safety: read_only
+      - id: object-info
+        method: GET
+        path: /object_info
+        safety: read_only
+      - id: queue
+        method: GET
+        path: /queue
+        safety: read_only
+      - id: prompt
+        method: POST
+        path: /prompt
+        safety: write_execution
+
+  - id: google-gemini-api
+    tool: google-gemini-api
+    transport: https
+    base_ref: GOOGLE_GEMINI_API_BASE
+    operations:
+      - id: generate-content
+        method: POST
+        endpoint_ref: generateContent
+        safety: paid_external_execution
+
+  - id: github-api
+    tool: github-api
+    transport: https
+    base_ref: GITHUB_API_BASE
+    operations:
+      - id: repo-read
+        safety: read_only
+      - id: issue-write
+        safety: external_write
+      - id: pull-request-write
+        safety: external_write
+
+  - id: supabase-api
+    tool: supabase-api
+    transport: https
+    base_ref: SUPABASE_PROJECT_URL
+    operations:
+      - id: query
+        safety: governed_read
+      - id: mutate
+        safety: governed_write
+
+rules:
+  - Skills reference endpoint IDs, never duplicate provider URLs without need.
+  - Secrets and concrete tokens are excluded from endpoint records.
+  - Write operations must declare a safety class.
+  - Endpoint version changes are absorbed here or in adapters, not propagated into every caller.
