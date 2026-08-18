@@ -1,62 +1,82 @@
-version: 2
+version: 3
 updated_at: 2026-08-18
+
+default:
+  fallback_policy: none
 
 fallbacks:
   - capability: knowledge.research
-    order:
-      - google-deep-research-ui
-      - google-gemini-api
-      - research.web-general
-    fail_when:
-      - no_current_sources
-      - provider_unavailable
+    fallback_policy: none
+    declared_candidates: [google-deep-research-ui, google-gemini-api, research.web-general]
+    audit_status: follow_up_required
+    rationale: Existing candidates mix tool/skill identity, execution mode, cost and evidence behavior; same-semantics equivalence is not yet proven.
 
-  # Wave 10: capabilities criativas específicas NÃO têm fallback cruzado local↔cloud.
   - capability: creative.image.local
-    order:
-      - comfyui-local
-    fail_when:
-      - local_gpu_unavailable
-      - local_runtime_unhealthy
-    no_cross_fallback: true
+    fallback_policy: none
+    declared_candidates: [comfyui-local]
+    audit_status: p0_safe
+    rationale: No alternate implementation is declared; local-to-cloud switching is not an allowed implicit fallback.
 
   - capability: creative.image.cloud
-    order:
-      - fal-api
-    fail_when:
-      - provider_unavailable
-      - quota_exhausted
-      - no_validated_provider
-    no_cross_fallback: true
+    fallback_policy: none
+    declared_candidates: [fal-api]
+    audit_status: p0_safe
+    rationale: No automatic cross-capability or local/cloud fallback is authorized.
 
   - capability: creative.video.cloud
-    order:
-      - higgsfield-mcp
-      - fal-api
-    fail_when:
-      - provider_unavailable
-      - quota_exhausted
+    fallback_policy: none
+    declared_candidates: [higgsfield-mcp, fal-api]
+    audit_status: follow_up_required
+    rationale: Multiple discovery candidates exist, but equivalence of semantics, privacy, cost class and lifecycle eligibility has not been proven for same_semantics_only.
 
   - capability: dev.async-coding
-    order:
-      - claude-code-local
-      - codex-local
-    fail_when:
-      - executor_unavailable
-      - repo_permission_missing
+    fallback_policy: none
+    declared_candidates: [claude-code-local, codex-local]
+    audit_status: follow_up_required
+    rationale: Executor availability/failover belongs to TaskOps and the Executor Router; this registry must not silently turn executor substitution into Domain Router fallback.
 
   - capability: storage.files
-    order:
-      - google-drive-connector
-    fail_when:
-      - connector_unavailable
-      - destination_policy_denied
+    fallback_policy: none
+    declared_candidates: [google-drive-connector]
+    audit_status: p0_safe
+    rationale: No alternate destination is automatically authorized.
+
+  - capability: commerce.catalog.search
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: commerce.catalog.read
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: commerce.pricing.read
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: commerce.inventory.read
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: commerce.orders.read
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: commerce.product.normalize
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: commerce.product.evaluate
+    fallback_policy: none
+    audit_status: p0_safe
 
 rules:
-  - Fallbacks preserve the skill output contract whenever possible.
-  - Provider-specific features may require a degraded-result marker.
-  - Do not silently switch to a higher-cost provider without policy evaluation.
-  - A missing safe fallback is preferable to an unsafe implicit fallback.
-  - Marketplace-specific commerce skills never fallback across marketplaces.
-  - FEATURE, PRE_APPROVAL, DISABLED and non-routable marketplace tools are never fallback candidates.
-  - Read-only commerce skills never fallback to a tool that requires mutation scope.
+  - fallback_policy defaults to none for every capability unless an explicit same_semantics_only policy is reviewed and registered.
+  - same_semantics_only must preserve domain, capability semantics, output contract, permission class, read/write behavior, data classification and lifecycle eligibility.
+  - Never silently fallback across marketplaces.
+  - Never silently fallback across domains.
+  - Never fallback from read to write or otherwise escalate permissions.
+  - Never route FEATURE or another non-production lifecycle state as a production fallback.
+  - Never change semantic behavior through fallback.
+  - Never change privacy or cost class through fallback without an explicit policy that permits and constrains that change.
+  - Discovery order or candidate lists are metadata only and do not authorize automatic fallback.
+  - A missing safe route returns a normalized blocked/error result rather than an implicit substitute.
