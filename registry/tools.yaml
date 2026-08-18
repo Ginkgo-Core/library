@@ -1,5 +1,5 @@
-version: 1
-updated_at: 2026-08-17
+version: 2
+updated_at: 2026-08-18
 
 # Concrete execution surfaces known to the Arsenal.
 # Secrets are never stored here; only logical credential references.
@@ -75,7 +75,7 @@ tools:
     auth:
       type: local-trusted-boundary
     status: validated
-    validation_status: VALIDATED     # Wave 10 provider-status (Atlas §20b); E2E Waves 7-9
+    validation_status: VALIDATED
 
   - id: gemini-image
     provider: google-ai
@@ -89,7 +89,7 @@ tools:
     billing_boundary: google-cloud-project
     cost_estimate_usd_per_image: 0.039
     status: experimental
-    validation_status: EXPERIMENTAL  # adapter+health OK; sem E2E pago bem-sucedido (quota 429, Wave 9)
+    validation_status: EXPERIMENTAL
     rules:
       - "Never eligible for normal production requests; explicit eval mode only."
       - "Never an automatic fallback for local capability."
@@ -128,8 +128,78 @@ tools:
     capabilities: [dev.async-coding]
     status: available
 
+  - id: amazon-sp-api
+    provider: amazon-selling-partner
+    kind: api
+    execution_mode: autonomous
+    capabilities: [commerce.catalog.search, commerce.pricing.read, commerce.inventory.read, commerce.orders.read]
+    auth:
+      type: oauth_refresh_token
+      credential_refs: [AMZ_SP_CLIENT_ID, AMZ_SP_CLIENT_SECRET, AMZ_SP_REFRESH_TOKEN, AMZ_SELLER_ID, AMZ_MARKETPLACE_ID]
+    status: planned
+    validation_status: DISABLED
+    routing_eligible: false
+    production_eligible: false
+    source_of_truth: Scale-Characters/amazon-ops
+    rules:
+      - "Registry presence is discovery metadata only; no merged adapter or live read E2E exists."
+      - "Do not route callers to this tool until GitHub evidence promotes it."
+      - "Read permissions only for the first batch."
+
+  - id: shopee-open-api
+    provider: shopee-open-platform
+    kind: api
+    execution_mode: autonomous
+    capabilities: [commerce.catalog.read, commerce.orders.read]
+    auth:
+      type: oauth
+      credential_refs: [SHOPEE_PARTNER_ID, SHOPEE_PARTNER_KEY, SHOPEE_SHOP_ID, SHOPEE_ACCESS_TOKEN, SHOPEE_REFRESH_TOKEN]
+    status: pre-approval
+    validation_status: DISABLED
+    routing_eligible: false
+    production_eligible: false
+    external_gate: shopee_business_approval
+    source_of_truth: Scale-Characters/amazon-ops#2
+    rules:
+      - "Offline adapter/test evidence exists, but provider has no approved live validation."
+      - "PRE-APPROVAL means no live routing."
+      - "Mutation scopes remain blocked and are not part of these read skills."
+
+  - id: amazon-ops-shopee-normalizer
+    provider: local
+    kind: python-module
+    execution_mode: autonomous
+    capabilities: [commerce.product.normalize]
+    implementation_ref: Scale-Characters/amazon-ops#2:integrations/shopee/catalog.py#normalize_product
+    status: pre-approval-prototype
+    validation_status: EXPERIMENTAL
+    routing_eligible: false
+    production_eligible: false
+    rules:
+      - "Fixture-tested only; Shopee skill lifecycle remains FEATURE/PRE_APPROVAL."
+      - "No network or marketplace mutation authority."
+
+  - id: amazon-ops-product-evaluator
+    provider: local
+    kind: python-module
+    execution_mode: autonomous
+    capabilities: [commerce.product.evaluate]
+    implementation_refs:
+      - Scale-Characters/amazon-ops:scripts/comparar.py
+      - Scale-Characters/amazon-ops#2:integrations/shopee/candidate.py
+    status: prototype
+    validation_status: EXPERIMENTAL
+    routing_eligible: false
+    production_eligible: false
+    policy_ref: commerce-evaluation-gates-v1
+    rules:
+      - "Deterministic numeric gates only; LLM does not calculate economic values."
+      - "APPROVED is advisory and grants no publish/purchase authority."
+      - "Thresholds are policy-owned, not caller inputs."
+
 rules:
   - Never expose credential values through this registry.
   - execution_mode must describe what is truly automatable today.
   - A web-only product must not be advertised to agents as an autonomous API.
   - Tools are replaceable implementations of skills/capabilities, never product-level dependencies by default.
+  - DISABLED marketplace tools are discoverable but never routing-eligible.
