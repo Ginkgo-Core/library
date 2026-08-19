@@ -1,5 +1,5 @@
 version: 3
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 
 # Registry records describe purpose-driven skills and internal implementation bindings.
 # Public capabilities remain provider-agnostic; provider-specific IDs are never public capability IDs.
@@ -381,14 +381,19 @@ skills:
       live: OFF
       live_provider_validation_proven: false
 
-  - id: shopee-open-api.product.normalize
-    kind: provider_binding
+  - id: shopee.product.normalize
+    kind: implementation_binding
     legacy_aliases:
       - id: commerce.shopee.product.normalize
         deprecated: true
-        replacement: shopee-open-api.product.normalize
+        replacement: shopee.product.normalize
         public_capability: false
-    purpose: Normalize a Shopee product payload into the canonical commerce product contract.
+      - id: shopee-open-api.product.normalize
+        deprecated: true
+        replacement: shopee.product.normalize
+        public_capability: false
+        reason: implementation_is_local_payload_normalization_not_open_api_execution
+    purpose: Normalize an already supplied Shopee-format product payload into the canonical commerce product contract using a deterministic local Python transformation.
     capability: commerce.product.normalize
     lifecycle_status: FEATURE
     lifecycle_ceiling: FEATURE
@@ -405,19 +410,19 @@ skills:
       marketplace_write: []
       pii: none
     approval_required: false
-    external_gate:
-      id: shopee_business_approval
-      required: true
-      registry_observed_state: UNKNOWN
-      observation: pending_evidence
-      runtime_state_source: PostgreSQL
-      registry_state_is_runtime_authority: false
+    implementation_ref: Scale-Characters/amazon-ops#2:integrations/shopee/catalog.py#normalize_product
+    upstream_requirement:
+      operation: shopee_live_payload_acquisition
+      external_gate: shopee_business_approval
+      required_for_local_normalization: false
+      required_for_live_payload_acquisition: true
+      approval_cannot_override_external_gate: true
     preferred_tools: [amazon-ops-shopee-normalizer]
-    preferred_providers: [local]
     fallback_policy: none
-    use_when: [shopee_payload_requires_canonical_shape, offline_fixture_validation]
-    avoid_when: [non_shopee_source, product_matching_required, economic_evaluation_required]
+    use_when: [shopee_payload_requires_canonical_shape, offline_fixture_validation, authorized_payload_already_available, post_read_normalization_after_separate_live_acquisition]
+    avoid_when: [non_shopee_source, live_payload_must_first_be_acquired, product_matching_required, economic_evaluation_required]
     routing_eligible: false
+    execution_scope: offline_fixture_only
     live_execution: blocked
     production_eligible: false
     evidence:
@@ -431,6 +436,8 @@ skills:
       credentials_in_ci: none
       mutations: OFF
       live: OFF
+      offline_normalization_evidence_proven: true
+      governed_live_payload_contract_validation_proven: false
       live_provider_validation_proven: false
 
   - id: commerce.product.evaluate
