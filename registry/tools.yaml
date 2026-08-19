@@ -67,7 +67,6 @@ tools:
     status: available
 
   - id: comfyui-local
-    provider: local
     kind: http-api
     execution_mode: autonomous
     capabilities: [creative.image.local]
@@ -115,14 +114,12 @@ tools:
     status: available
 
   - id: claude-code-local
-    provider: local
     kind: cli
     execution_mode: supervised
     capabilities: [dev.async-coding]
     status: validated
 
   - id: codex-local
-    provider: local
     kind: cli
     execution_mode: supervised
     capabilities: [dev.async-coding]
