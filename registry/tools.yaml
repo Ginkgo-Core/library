@@ -1,5 +1,5 @@
 version: 3
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 
 # Concrete execution/tool surfaces known to the Arsenal.
 # Tool != Provider != Adapter. Secrets are never stored here; only logical credential references.
@@ -196,19 +196,37 @@ tools:
       - "Mutation scopes remain blocked and are not part of these read bindings."
 
   - id: amazon-ops-shopee-normalizer
-    provider: local
     kind: python-module
     taxonomy_role: tool
     execution_mode: autonomous
     capabilities: [commerce.product.normalize]
     implementation_ref: Scale-Characters/amazon-ops#2:integrations/shopee/catalog.py#normalize_product
+    provider_applicable: false
+    external_network: false
     status: pre-approval-prototype
     validation_status: EXPERIMENTAL
     routing_eligible: false
     production_eligible: false
+    source_of_truth: Scale-Characters/amazon-ops#2
+    evidence:
+      head: bccfc0f5142f432f889158870c8f9e26e353fa65
+      github_actions_run: 32169677496
+      ruff: PASS
+      shopee_offline: 28_passed
+      general_suite: 104_passed_1_deselected
+      windows_linux_diagnostic: 1_expected_failure_non_blocking
+      credentials_in_ci: none
+      mutations: OFF
+      live: OFF
+      offline_normalization_evidence_proven: true
+      governed_live_payload_contract_validation_proven: false
     rules:
-      - "Fixture-tested only; Shopee binding lifecycle remains FEATURE/PRE_APPROVAL."
-      - "No network or marketplace mutation authority."
+      - "This record is a deterministic local Python tool; provider is intentionally not applicable."
+      - "No standalone Adapter entity is required or proven for this local transformation."
+      - "Fixture-tested only; shopee.product.normalize lifecycle remains FEATURE/F1/PRE_APPROVAL."
+      - "No network, credential use or marketplace mutation authority."
+      - "Shopee business approval gates upstream live payload acquisition, not execution of this already-supplied-payload transform."
+      - "Offline normalization evidence does not prove governed live-payload contract validation."
 
   - id: amazon-ops-product-evaluator
     provider: local
