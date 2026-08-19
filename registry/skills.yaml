@@ -301,6 +301,9 @@ skills:
       marketplace_write: []
       pii: none
     approval_required: false
+    adapter_id: shopee-open-api
+    provider: shopee-open-platform
+    internal_routing_metadata: true
     external_gate:
       id: shopee_business_approval
       required: true
@@ -308,8 +311,6 @@ skills:
       observation: pending_evidence
       runtime_state_source: PostgreSQL
       registry_state_is_runtime_authority: false
-    preferred_tools: [shopee-open-api]
-    preferred_providers: [shopee-open-platform]
     fallback_policy: none
     use_when: [offline_fixture_validation, authorized_shop_catalog_read_after_external_gate]
     avoid_when: [third_party_catalog_discovery, any_write, live_before_shopee_approval]
@@ -353,6 +354,9 @@ skills:
       marketplace_write: []
       pii: redacted
     approval_required: false
+    adapter_id: shopee-open-api
+    provider: shopee-open-platform
+    internal_routing_metadata: true
     external_gate:
       id: shopee_business_approval
       required: true
@@ -360,8 +364,6 @@ skills:
       observation: pending_evidence
       runtime_state_source: PostgreSQL
       registry_state_is_runtime_authority: false
-    preferred_tools: [shopee-open-api]
-    preferred_providers: [shopee-open-platform]
     fallback_policy: none
     use_when: [offline_fixture_validation, authorized_shop_orders_after_external_gate]
     avoid_when: [order_mutation, unnecessary_buyer_pii, live_before_shopee_approval]
@@ -468,7 +470,6 @@ skills:
       approved_is_p0_approval: false
       grants_side_effect_authority: false
     preferred_tools: [amazon-ops-product-evaluator]
-    preferred_providers: [local]
     fallback_policy: none
     use_when: [normalized_candidate_requires_evaluation, target_price_and_delivered_cost_available]
     avoid_when: [caller_wants_threshold_override, caller_expects_publish_or_purchase_authorization]
