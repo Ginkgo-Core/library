@@ -1,0 +1,309 @@
+version: 1
+updated_at: 2026-08-19
+domain: analytics
+status: FEATURE
+priority: P1_HIGH
+routing_eligible: false
+production_eligible: false
+runtime_authority: false
+
+# Domain pack staged on top of the canonical Library registry.
+# It does not replace the P0 CapabilityRequest/CapabilityResult contracts and it is not runtime state.
+# Canonical taxonomy remains:
+# CAPABILITY != SKILL != BINDING != TOOL != ADAPTER != PROVIDER != EXECUTOR
+
+capabilities:
+  - id: analytics.semantic.inspect
+    purpose: Inspect an authorized analytical semantic model before analysis.
+    bindings:
+      - skill_id: powerbi.semantic.inspect
+        routing_eligible: false
+    output_contract: analytics-semantic-inspection.v1
+    lifecycle_ceiling: FEATURE
+
+  - id: analytics.metric.calculate
+    purpose: Calculate or derive governed analytical metrics without exposing implementation language to callers.
+    bindings:
+      - skill_id: powerbi.metric.calculate.dax
+        routing_eligible: false
+    output_contract: analytics-metric-calculation.v1
+    lifecycle_ceiling: FEATURE
+
+  - id: analytics.insight.analyze
+    purpose: Convert governed observations into labeled findings, comparisons, trends, anomalies, drivers, correlations and inferences.
+    bindings:
+      - skill_id: analytics.insight.analyze
+        provider_neutral: true
+        routing_eligible: false
+    output_contract: analytics-insight-analysis.v1
+    lifecycle_ceiling: FEATURE
+
+  - id: analytics.visualization.compose
+    purpose: Compose a renderer-neutral analytical visualization from governed metrics and evidence.
+    bindings:
+      - skill_id: powerbi.visualization.compose.deneb
+        routing_eligible: false
+    output_contract: analytics-visualization-spec.v1
+    lifecycle_ceiling: FEATURE
+
+  - id: analytics.visual.answer
+    purpose: Answer a quantitative business question with summary, findings, metrics, visualizations, warnings and provenance.
+    bindings:
+      - skill_id: analytics.visual.answer
+        provider_neutral: true
+        routing_eligible: false
+    output_contract: analytics-visual-answer.v1
+    lifecycle_ceiling: FEATURE
+
+  - id: analytics.dashboard.compose
+    purpose: Compose a renderer-neutral multi-visual dashboard specification without publishing it.
+    bindings:
+      - skill_id: analytics.dashboard.compose
+        provider_neutral: true
+        routing_eligible: false
+    output_contract: analytics-dashboard-spec.v1
+    lifecycle_ceiling: FEATURE
+
+  - id: analytics.report.generate
+    purpose: Generate a durable analytical report specification with evidence and caveats without delivering/publishing it.
+    bindings:
+      - skill_id: analytics.report.generate
+        provider_neutral: true
+        routing_eligible: false
+    output_contract: analytics-report-spec.v1
+    lifecycle_ceiling: FEATURE
+
+skills:
+  - id: powerbi.semantic.inspect
+    kind: provider_binding
+    capability: analytics.semantic.inspect
+    lifecycle_status: FEATURE
+    lifecycle_ceiling: FEATURE
+    adapter_id: powerbi
+    provider: microsoft-power-bi
+    preferred_tools: [powerbi-mcp-bridge, pbip, tmdl]
+    inputs: [semantic_model_ref, requested_entities, metadata_depth]
+    forbidden_inputs: [skill_id, skill_version, provider, adapter, tool, endpoint, credential, secret]
+    outputs: [model_ref, tables, relationships, columns, measures, dimensions, hierarchies, warnings, provenance]
+    permissions:
+      model_read: authorized_only
+      model_write: false
+      caller_secret_access: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: powerbi.metric.calculate.dax
+    kind: provider_binding
+    capability: analytics.metric.calculate
+    lifecycle_status: FEATURE
+    lifecycle_ceiling: FEATURE
+    adapter_id: powerbi
+    provider: microsoft-power-bi
+    preferred_tools: [dax, powerbi-mcp-bridge]
+    inputs: [semantic_model_ref, metric_intent, filters, period, comparison]
+    forbidden_inputs: [skill_id, skill_version, provider, adapter, tool, endpoint, credential, secret, create_measure_live, overwrite_measure_live]
+    outputs: [metric_id, metric_definition, candidate_expression, validation, value, unit, warnings, evidence, provenance]
+    permissions:
+      model_read: authorized_only
+      model_write: false
+      caller_secret_access: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: analytics.insight.analyze
+    kind: analytical_domain_skill
+    capability: analytics.insight.analyze
+    lifecycle_status: FEATURE
+    lifecycle_ceiling: FEATURE
+    adapter_id: null
+    provider: null
+    preferred_tools: []
+    inputs: [question, metrics, evidence_refs, dimensions, period, comparison_baseline]
+    forbidden_inputs: [skill_id, skill_version, provider, adapter, tool, credential, secret, fabricate_missing_data, unlabeled_causal_claim]
+    outputs: [findings, finding_kind, confidence, supporting_metrics, evidence_refs, warnings, provenance]
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: powerbi.visualization.compose.deneb
+    kind: provider_binding
+    capability: analytics.visualization.compose
+    lifecycle_status: FEATURE
+    lifecycle_ceiling: FEATURE
+    adapter_id: powerbi
+    provider: microsoft-power-bi
+    preferred_tools: [deneb, vega-lite]
+    inputs: [analytical_data, semantic_visual_intent, evidence_refs, accessibility_requirements]
+    forbidden_inputs: [skill_id, skill_version, provider, adapter, tool, credential, secret, publish_report, overwrite_visual]
+    outputs: [chart_type, title, semantic_spec, renderer_spec, required_fields, warnings, evidence_refs, provenance]
+    permissions:
+      report_read: authorized_only
+      report_write: false
+      caller_secret_access: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: analytics.visual.answer
+    kind: composite_domain_skill
+    capability: analytics.visual.answer
+    lifecycle_status: FEATURE
+    lifecycle_ceiling: FEATURE
+    adapter_id: null
+    provider: null
+    composes_capabilities: [analytics.semantic.inspect, analytics.metric.calculate, analytics.insight.analyze, analytics.visualization.compose]
+    inputs: [question, dataset_refs, semantic_model_ref, period, dimensions, visualization_preferences]
+    forbidden_inputs: [skill_id, skill_version, provider, adapter, tool, model, endpoint, credential, secret, force_live_write]
+    outputs: [summary, findings, metrics, visualizations, warnings, provenance]
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: analytics.dashboard.compose
+    kind: analytical_domain_skill
+    capability: analytics.dashboard.compose
+    lifecycle_status: FEATURE
+    lifecycle_ceiling: FEATURE
+    adapter_id: null
+    provider: null
+    inputs: [objective, metrics, evidence_refs, audience, dimensions, filters, visualization_preferences]
+    forbidden_inputs: [skill_id, skill_version, provider, adapter, tool, credential, secret, publish_dashboard, overwrite_report]
+    outputs: [dashboard_title, audience, kpis, sections, visual_specs, filters, drilldowns, warnings, evidence_refs, provenance]
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: analytics.report.generate
+    kind: analytical_domain_skill
+    capability: analytics.report.generate
+    lifecycle_status: FEATURE
+    lifecycle_ceiling: FEATURE
+    adapter_id: null
+    provider: null
+    inputs: [objective, findings, metrics, evidence_refs, audience, visualizations, period, recommendations]
+    forbidden_inputs: [skill_id, skill_version, provider, adapter, tool, credential, secret, send_email, publish_dashboard, upload_external]
+    outputs: [title, executive_summary, findings, metrics, visualizations, recommendations, caveats, evidence_refs, provenance]
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+tools:
+  - id: powerbi-mcp-bridge
+    taxonomy_role: tool
+    kind: mcp-bridge
+    purpose: Controlled bridge candidate for reading/operating Power BI through an MCP-compatible tool boundary.
+    external_network: false
+    write_capability: potentially_privileged
+    routing_eligible: false
+    production_eligible: false
+    note: Must be least-privilege validated before any live use.
+
+  - id: pbip
+    taxonomy_role: tool_format
+    kind: project-format
+    purpose: Power BI project representation used as semantic project input.
+    routing_eligible: false
+
+  - id: tmdl
+    taxonomy_role: tool_format
+    kind: semantic-model-format
+    purpose: Semantic model metadata representation used for model-aware analysis.
+    routing_eligible: false
+
+  - id: dax
+    taxonomy_role: tool_language
+    kind: analytical-expression-language
+    purpose: Candidate metric expression language for the Power BI binding.
+    routing_eligible: false
+
+  - id: deneb
+    taxonomy_role: tool
+    kind: powerbi-visual-extension
+    purpose: Custom visualization surface capable of consuming Vega/Vega-Lite specifications in Power BI.
+    routing_eligible: false
+    production_eligible: false
+
+  - id: vega-lite
+    taxonomy_role: tool_language
+    kind: visualization-spec-language
+    purpose: Declarative visualization specification language used by the Deneb binding candidate.
+    routing_eligible: false
+
+  - id: powerbi-html-content
+    taxonomy_role: tool
+    kind: powerbi-visual-extension
+    purpose: Candidate HTML visual renderer for card/sparkline-style analytical outputs.
+    routing_eligible: false
+    production_eligible: false
+
+providers:
+  - id: microsoft-power-bi
+    kind: analytics-platform
+    purpose: External BI platform implementation behind the powerbi adapter.
+    caller_selectable: false
+    routing_eligible: false
+    production_eligible: false
+    validation_state: UNVALIDATED
+
+policies:
+  - id: analytics-read-generate-no-write-v1
+    applies_to: [analytics.semantic.inspect, analytics.metric.calculate, analytics.insight.analyze, analytics.visualization.compose, analytics.visual.answer, analytics.dashboard.compose, analytics.report.generate]
+    rules:
+      - Read/analysis/generation does not imply external mutation authority.
+      - Creating or replacing measures, relationships, visuals, reports or dashboards requires a separate governed write capability.
+      - Caller cannot select or restrict provider, adapter, binding, tool or model.
+
+  - id: analytics-evidence-v1
+    applies_to: [analytics.insight.analyze, analytics.visual.answer, analytics.dashboard.compose, analytics.report.generate]
+    rules:
+      - Every material analytical claim requires evidence references.
+      - Charts are presentation, not evidence by themselves.
+      - Generated DAX/SQL/Vega-Lite is not observed evidence until evaluated against an authorized source.
+      - Inference must be labeled as inference.
+      - Missing or stale data must surface warnings.
+
+  - id: analytics-visual-quality-v1
+    applies_to: [analytics.visualization.compose, analytics.visual.answer, analytics.dashboard.compose]
+    rules:
+      - Validate units, aggregation, time granularity and semantic chart fit.
+      - Protect sensitive fields in labels and tooltips.
+      - Avoid unjustified dual axes.
+      - Part-to-whole visuals require a meaningful total.
+      - Styling cannot override analytical correctness or accessibility.
+
+fallbacks:
+  analytics.semantic.inspect: none
+  analytics.metric.calculate: none
+  analytics.insight.analyze: none
+  analytics.visualization.compose: none
+  analytics.visual.answer: none
+  analytics.dashboard.compose: none
+  analytics.report.generate: none
+
+provenance:
+  architecture_ref: Ginkgo-Core/ai-stack:feature/analytics-visual-intelligence-v1
+  skill_atlas_ref: Ginkgo-Core/ginkgo-agents:feature/analytics-visual-intelligence-v1
+  research_inputs:
+    - title: "Pare de usar visuais nativos no Power BI: crie visuais INCRÍVEIS com Claude"
+      author: "Antonio Bennati | Dados & IA"
+      published: 2026-08-18
+      reviewed: 2026-08-19
+      source: "https://www.youtube.com/watch?v=t_XKSh7lzZY"
+      observed_patterns: [powerbi_mcp, pbip, tmdl, dax_generation, html_content, deneb, vega_lite, card, sparkline, gauge, line_tooltip, bullet_chart]
+      evidence_scope: workflow_pattern_only
+
+promotion:
+  allowed: false
+  lifecycle_ceiling: FEATURE
+  requires:
+    - canonical_contract_review
+    - fixture_semantic_model
+    - metric_expected_answer_pack
+    - visualization_schema_and_snapshot_tests
+    - evidence_provenance_tests
+    - authorization_and_sensitive_data_tests
+    - least_privilege_adapter_review
+    - one_reproducible_offline_end_to_end_answer
+    - reviewer_approval
