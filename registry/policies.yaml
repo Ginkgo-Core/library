@@ -94,7 +94,6 @@ policies:
     applies_to:
       bindings: [shopee-open-api.catalog.read, shopee-open-api.orders.read]
       providers: [shopee-open-platform]
-      tools: [shopee-open-api]
     external_gate_requirement:
       id: shopee_business_approval
       required: true
