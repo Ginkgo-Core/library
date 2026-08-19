@@ -13,6 +13,12 @@ This registry references, and does not duplicate, the P0 freeze in `Ginkgo-Core/
 
 Skill/binding behavior is defined by the aligned contracts in `Ginkgo-Core/ginkgo-agents#9`.
 
+Canonical audited references for this correction:
+
+- `Ginkgo-Core/ai-stack#15` — `5c45ab7a7348e8f50ccef5162e391907e108c378`
+- `Ginkgo-Core/ai-stack#9` — `4dcc3317c43affd4e34b6285cf08cbf252015cf2`
+- `Ginkgo-Core/ginkgo-agents#9` — `27564bc64f534e23f69fb191f493575aff6d0385`
+
 Architecture precedence is therefore:
 
 ```text
@@ -68,18 +74,20 @@ The Arsenal currently records:
 - **CAPABILITY** — provider-agnostic public semantic contract.
 - **SKILL/BINDING** — purpose-driven skill or internal implementation binding.
 - **TOOL** — concrete API surface, MCP, CLI, connector, module or human-assisted surface.
-- **PROVIDER** — external implementation/provider family behind an adapter boundary.
+- **PROVIDER** — external implementation/provider family behind an adapter boundary where a provider applies.
 - **POLICY** — capability, binding/provider, Approval or External Gate constraints.
 - **FALLBACK** — explicit failover policy metadata.
 - **PROVENANCE/EVIDENCE** — source references supporting discovery/lifecycle claims.
 
-The current registry does **not** have a standalone Adapter entity. This PR does not invent one or create a parallel registry. Marketplace tool records therefore remain Tool/API surfaces, while adapter identity is referenced from `Ginkgo-Core/ginkgo-agents#9`. A dedicated Adapter taxonomy/registry, if adopted, requires a follow-up architecture decision across the Library rather than a Commerce-only one-off.
+`EXECUTOR` is a separate TaskOps/Executor Router concern and is not a synonym for any entity above.
+
+The current registry does **not** have a standalone Adapter entity. This PR does not invent one or create a parallel registry. Marketplace tool records therefore remain Tool/API surfaces, while adapter identity is referenced from `Ginkgo-Core/ginkgo-agents#9` when an adapter boundary exists. A dedicated Adapter taxonomy/registry, if adopted, requires a follow-up architecture decision across the Library rather than a Commerce-only one-off.
 
 ## Files
 
 - `providers.yaml` — provider families and discovery/access boundaries.
 - `capabilities.yaml` — public outcome-level capabilities independent of providers.
-- `skills.yaml` — purpose-driven skills and internal provider bindings with lifecycle ceilings.
+- `skills.yaml` — purpose-driven skills and internal implementation bindings with lifecycle ceilings.
 - `tools.yaml` — concrete API/tool execution surfaces; Tool != Provider != Adapter.
 - `endpoints.yaml` — centralized invocation surfaces where eligible; registry presence is not routing authority.
 - `policies.yaml` — capability, binding/provider, Approval and External Gate constraints.
@@ -90,10 +98,10 @@ The current registry does **not** have a standalone Adapter entity. This PR does
 ## Core invariant
 
 ```text
-CALLER != CAPABILITY != SKILL/BINDING != TOOL != ADAPTER != PROVIDER
+CALLER != CAPABILITY != SKILL != BINDING != TOOL != ADAPTER != PROVIDER != EXECUTOR
 ```
 
-Commerce example:
+Network Commerce example:
 
 ```text
 public capability: commerce.catalog.search
@@ -101,6 +109,17 @@ internal binding:  amazon-spapi.catalog.search
 tool/API surface:  amazon-sp-api
 adapter identity:   amazon-spapi (defined/referenced by aligned Agents contract)
 provider:           amazon-selling-partner
+```
+
+Local normalization example:
+
+```text
+public capability: commerce.product.normalize
+internal binding:  shopee.product.normalize
+tool:              amazon-ops-shopee-normalizer
+implementation:    Scale-Characters/amazon-ops#2:integrations/shopee/catalog.py#normalize_product
+adapter:           n/a
+provider:          n/a
 ```
 
 The caller selects the capability intent and constraints. It never selects the binding, adapter, provider, raw endpoint or credential.
@@ -119,7 +138,7 @@ commerce.product.normalize
 commerce.product.evaluate
 ```
 
-Provider identity belongs to internal bindings:
+Current internal Commerce bindings include:
 
 ```text
 amazon-spapi.catalog.search
@@ -128,10 +147,20 @@ amazon-spapi.inventory.read
 amazon-spapi.orders.read
 shopee-open-api.catalog.read
 shopee-open-api.orders.read
-shopee-open-api.product.normalize
+shopee.product.normalize
+commerce.product.evaluate
 ```
 
 Historical `commerce.amazon.*` and `commerce.shopee.*` IDs are compatibility aliases only. They are deprecated and must never be advertised as public capabilities.
+
+For product normalization specifically, both legacy implementation names are deprecated aliases to the same final binding:
+
+```text
+commerce.shopee.product.normalize -> shopee.product.normalize
+shopee-open-api.product.normalize -> shopee.product.normalize
+```
+
+The second alias is retained only for migration compatibility because its old name incorrectly implied Shopee Open API execution.
 
 ## Discovery is not authorization
 
@@ -145,9 +174,12 @@ A record may exist in the Library and still be blocked from runtime routing. `FE
 
 For this Commerce batch:
 
-- Amazon bindings: `FEATURE`, `routing_eligible: false`, live execution blocked.
-- Shopee bindings: `FEATURE / PRE_APPROVAL`, `routing_eligible: false`, live execution blocked.
+- Amazon bindings: `FEATURE / F1`, `routing_eligible: false`, live execution blocked.
+- Shopee network read bindings: `FEATURE / F1 / PRE_APPROVAL`, `routing_eligible: false`, live execution blocked.
+- `shopee.product.normalize`: `FEATURE / F1 / PRE_APPROVAL`, offline/local fixture scope only, `routing_eligible: false`, not production eligible.
 - `commerce.product.evaluate`: `PROTOTYPE / F2`, eval/test only, not production eligible.
+
+Offline execution of `shopee.product.normalize` does not promote lifecycle. Promotion still requires governed live-payload evidence and canonical contract validation.
 
 ## Approval vs External Gate
 
@@ -160,7 +192,7 @@ External Gate: CLEAR | BLOCKED | UNKNOWN | EXPIRED
 
 An Approval transition cannot clear an External Gate.
 
-For Shopee, the registry declares the required gate:
+For live Shopee acquisition, the registry declares the required gate:
 
 ```yaml
 external_gate:
@@ -171,6 +203,25 @@ external_gate:
 ```
 
 `UNKNOWN` here is a source-backed registry observation indicating pending evidence. It is **not** the canonical mutable runtime gate state. Runtime policy/PostgreSQL owns that state.
+
+The gate boundary is intentionally split:
+
+```text
+LIVE ACQUISITION
+Shopee Open API read
+  -> shopee_business_approval required
+  -> governed payload obtained
+
+LOCAL PROCESSING
+payload already supplied/authorized
+  -> shopee.product.normalize
+  -> deterministic local Python transform
+  -> no network External Gate
+```
+
+`shopee_business_approval` applies to the live acquisition path (`shopee-open-api.catalog.read`, `shopee-open-api.orders.read`). It is an upstream requirement when a live payload must first be obtained, but it is not an execution gate for deterministic normalization of a payload already available to the binding.
+
+Human Approval cannot clear or replace the Shopee External Gate.
 
 ## Fallback P0 freeze
 
@@ -228,7 +279,14 @@ GitHub Actions evidence recorded by the aligned Agents contract:
 - mutations: OFF
 - live Shopee: OFF
 
-This is offline implementation/CI evidence only. It does **not** prove provider live validation. Shopee Business Approval plus a governed read-only live validation remain blockers.
+For `shopee.product.normalize`, this proves offline normalization behavior against local/fake inputs only.
+
+```text
+offline normalization evidence
+!= governed live-payload contract validation
+```
+
+No approved live Shopee payload has yet proven the canonical Commerce normalization contract. Shopee Business Approval is required before that live payload can be acquired through the governed read path; the subsequent normalization contract validation is a separate promotion requirement.
 
 ## Secrets
 
