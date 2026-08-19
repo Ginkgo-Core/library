@@ -1,5 +1,5 @@
 version: 4
-updated_at: 2026-08-18
+updated_at: 2026-08-19
 
 # Capability = provider-agnostic public semantic contract.
 # Skill/binding = internal implementation possibility declared for Domain Router discovery.
@@ -156,7 +156,7 @@ capabilities:
     purpose: Normalize provider-specific product payloads into a stable commerce product shape.
     routing_key: source_marketplace
     bindings:
-      - skill_id: shopee-open-api.product.normalize
+      - skill_id: shopee.product.normalize
         when:
           marketplace: shopee
         routing_eligible: false
