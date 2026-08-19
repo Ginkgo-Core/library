@@ -153,48 +153,6 @@ tools:
       - "Do not route callers to this tool until an eligible adapter binding and evidence are resolved by Domain Router policy."
       - "Read permissions only for the first batch."
 
-  - id: shopee-open-api
-    provider: shopee-open-platform
-    kind: api_surface
-    taxonomy_role: tool
-    execution_mode: autonomous
-    capabilities: [commerce.catalog.read, commerce.orders.read]
-    adapter_boundary:
-      required: true
-      adapter_id_from_agents_contract: shopee-open-api
-      canonical_binding_source: Ginkgo-Core/ginkgo-agents#9
-      standalone_library_adapter_entity_present: false
-    auth:
-      type: oauth
-      credential_refs: [SHOPEE_PARTNER_ID, SHOPEE_PARTNER_KEY, SHOPEE_SHOP_ID, SHOPEE_ACCESS_TOKEN, SHOPEE_REFRESH_TOKEN]
-    status: pre-approval
-    validation_status: DISABLED
-    routing_eligible: false
-    production_eligible: false
-    external_gate_requirement:
-      id: shopee_business_approval
-      required: true
-      registry_observed_state: UNKNOWN
-      runtime_state_source: PostgreSQL
-      registry_state_is_runtime_authority: false
-    source_of_truth: Scale-Characters/amazon-ops#2
-    evidence:
-      head: bccfc0f5142f432f889158870c8f9e26e353fa65
-      github_actions_run: 32169677496
-      ruff: PASS
-      shopee_offline: 28_passed
-      general_suite: 104_passed_1_deselected
-      windows_linux_diagnostic: 1_expected_failure_non_blocking
-      credentials_in_ci: none
-      mutations: OFF
-      live: OFF
-      live_provider_validation_proven: false
-    rules:
-      - "This record is the Shopee Open API tool/API surface, not the provider and not a Library adapter entity."
-      - "Offline adapter/test evidence exists, but provider live validation is not proven."
-      - "PRE-APPROVAL means no live routing."
-      - "Mutation scopes remain blocked and are not part of these read bindings."
-
   - id: amazon-ops-shopee-normalizer
     kind: python-module
     taxonomy_role: tool
@@ -229,7 +187,6 @@ tools:
       - "Offline normalization evidence does not prove governed live-payload contract validation."
 
   - id: amazon-ops-product-evaluator
-    provider: local
     kind: python-module
     taxonomy_role: tool
     execution_mode: autonomous
@@ -237,6 +194,7 @@ tools:
     implementation_refs:
       - Scale-Characters/amazon-ops:scripts/comparar.py
       - Scale-Characters/amazon-ops#2:integrations/shopee/candidate.py
+    provider_applicable: false
     status: prototype
     validation_status: EXPERIMENTAL
     routing_eligible: false
@@ -246,6 +204,7 @@ tools:
       - "Deterministic numeric gates only; LLM does not calculate economic values."
       - "APPROVED is an economic domain decision, not P0 Approval, and grants no publish/purchase authority."
       - "Thresholds are policy-owned, not caller inputs."
+      - "Provider is intentionally not applicable; local execution location is not a Provider identity."
 
 rules:
   - Never expose credential values through this registry.
