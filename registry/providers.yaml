@@ -1,5 +1,5 @@
-version: 1
-updated_at: 2026-08-17
+version: 3
+updated_at: 2026-08-18
 
 providers:
   - id: google-ai
@@ -79,3 +79,61 @@ providers:
     access_modes: [api]
     capabilities: [image-generation, video-generation, audio, model-inference]
     canonical_role: provider-behind-capability-router
+
+  - id: amazon-selling-partner
+    name: Amazon Selling Partner
+    kind: external-marketplace-provider
+    status: planned-unvalidated
+    access_modes: [api]
+    capabilities: [catalog-search, pricing-read, inventory-read, orders-read]
+    canonical_role: provider-behind-amazon-adapter
+    source_of_truth: Scale-Characters/amazon-ops
+    routing_eligible: false
+    production_eligible: false
+    rules:
+      - "Provider registry presence is discovery metadata only; it is not runtime authorization."
+      - "Logical credential references exist, but no repository-backed governed Amazon adapter plus read-only live evidence is registered yet."
+      - "Remain non-routable until implementation and governed live read evidence are registered in GitHub."
+      - "Read bindings never inherit marketplace mutation permissions."
+    verified_at: 2026-08-18
+
+  - id: shopee-open-platform
+    name: Shopee Open Platform
+    kind: external-marketplace-provider
+    status: pre-approval
+    access_modes: [api]
+    capabilities: [authorized-shop-catalog-read, authorized-shop-orders-read]
+    canonical_role: provider-behind-shopee-adapter
+    source_of_truth: Scale-Characters/amazon-ops#2
+    routing_eligible: false
+    production_eligible: false
+    external_gate_requirement:
+      id: shopee_business_approval
+      required: true
+      registry_observed_state: UNKNOWN
+      observation: pending_evidence
+      runtime_state_source: PostgreSQL
+      registry_state_is_runtime_authority: false
+    evidence:
+      head: bccfc0f5142f432f889158870c8f9e26e353fa65
+      github_actions_run: 32169677496
+      ruff: PASS
+      shopee_offline: 28_passed
+      general_suite: 104_passed_1_deselected
+      windows_linux_diagnostic: 1_expected_failure_non_blocking
+      credentials_in_ci: none
+      mutations: OFF
+      live: OFF
+      live_provider_validation_proven: false
+    rules:
+      - "PRE-APPROVAL freeze: no live routing until Shopee business approval is CLEAR in runtime policy state and governed read-only validation exists."
+      - "Offline CI proves offline behavior only and does not prove live-provider validation."
+      - "No real credentials in Git."
+      - "Mutation authorization is a separate future gate and remains blocked."
+      - "This provider is for the authorized shop context; do not treat it as a generic third-party catalog search provider."
+    verified_at: 2026-08-18
+
+rules:
+  - Provider is not Tool and is not Adapter.
+  - Provider records declare external implementation families and discovery constraints; they do not authorize execution.
+  - Runtime eligibility and External Gate state are evaluated by runtime policy/Domain Router state, with PostgreSQL authoritative for runtime state.

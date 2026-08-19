@@ -1,8 +1,8 @@
-version: 1
-updated_at: 2026-08-17
+version: 3
+updated_at: 2026-08-19
 
-# Concrete execution surfaces known to the Arsenal.
-# Secrets are never stored here; only logical credential references.
+# Concrete execution/tool surfaces known to the Arsenal.
+# Tool != Provider != Adapter. Secrets are never stored here; only logical credential references.
 
 tools:
   - id: google-gemini-api
@@ -67,7 +67,6 @@ tools:
     status: available
 
   - id: comfyui-local
-    provider: local
     kind: http-api
     execution_mode: autonomous
     capabilities: [creative.image.local]
@@ -75,7 +74,7 @@ tools:
     auth:
       type: local-trusted-boundary
     status: validated
-    validation_status: VALIDATED     # Wave 10 provider-status (Atlas §20b); E2E Waves 7-9
+    validation_status: VALIDATED
 
   - id: gemini-image
     provider: google-ai
@@ -89,7 +88,7 @@ tools:
     billing_boundary: google-cloud-project
     cost_estimate_usd_per_image: 0.039
     status: experimental
-    validation_status: EXPERIMENTAL  # adapter+health OK; sem E2E pago bem-sucedido (quota 429, Wave 9)
+    validation_status: EXPERIMENTAL
     rules:
       - "Never eligible for normal production requests; explicit eval mode only."
       - "Never an automatic fallback for local capability."
@@ -115,21 +114,100 @@ tools:
     status: available
 
   - id: claude-code-local
-    provider: local
     kind: cli
     execution_mode: supervised
     capabilities: [dev.async-coding]
     status: validated
 
   - id: codex-local
-    provider: local
     kind: cli
     execution_mode: supervised
     capabilities: [dev.async-coding]
     status: available
 
+  - id: amazon-sp-api
+    provider: amazon-selling-partner
+    kind: api_surface
+    taxonomy_role: tool
+    execution_mode: autonomous
+    capabilities: [commerce.catalog.search, commerce.pricing.read, commerce.inventory.read, commerce.orders.read]
+    adapter_boundary:
+      required: true
+      adapter_id_from_agents_contract: amazon-spapi
+      canonical_binding_source: Ginkgo-Core/ginkgo-agents#9
+      standalone_library_adapter_entity_present: false
+    auth:
+      type: oauth_refresh_token
+      credential_refs: [AMZ_SP_CLIENT_ID, AMZ_SP_CLIENT_SECRET, AMZ_SP_REFRESH_TOKEN, AMZ_SELLER_ID, AMZ_MARKETPLACE_ID]
+    status: planned
+    validation_status: DISABLED
+    routing_eligible: false
+    production_eligible: false
+    source_of_truth: Scale-Characters/amazon-ops
+    rules:
+      - "This record is the Amazon SP-API tool/API surface, not the provider and not a Library adapter entity."
+      - "Registry presence is discovery metadata only; no governed live read evidence exists."
+      - "Do not route callers to this tool until an eligible adapter binding and evidence are resolved by Domain Router policy."
+      - "Read permissions only for the first batch."
+
+  - id: amazon-ops-shopee-normalizer
+    kind: python-module
+    taxonomy_role: tool
+    execution_mode: autonomous
+    capabilities: [commerce.product.normalize]
+    implementation_ref: Scale-Characters/amazon-ops#2:integrations/shopee/catalog.py#normalize_product
+    provider_applicable: false
+    external_network: false
+    status: pre-approval-prototype
+    validation_status: EXPERIMENTAL
+    routing_eligible: false
+    production_eligible: false
+    source_of_truth: Scale-Characters/amazon-ops#2
+    evidence:
+      head: bccfc0f5142f432f889158870c8f9e26e353fa65
+      github_actions_run: 32169677496
+      ruff: PASS
+      shopee_offline: 28_passed
+      general_suite: 104_passed_1_deselected
+      windows_linux_diagnostic: 1_expected_failure_non_blocking
+      credentials_in_ci: none
+      mutations: OFF
+      live: OFF
+      offline_normalization_evidence_proven: true
+      governed_live_payload_contract_validation_proven: false
+    rules:
+      - "This record is a deterministic local Python tool; provider is intentionally not applicable."
+      - "No standalone Adapter entity is required or proven for this local transformation."
+      - "Fixture-tested only; shopee.product.normalize lifecycle remains FEATURE/F1/PRE_APPROVAL."
+      - "No network, credential use or marketplace mutation authority."
+      - "Shopee business approval gates upstream live payload acquisition, not execution of this already-supplied-payload transform."
+      - "Offline normalization evidence does not prove governed live-payload contract validation."
+
+  - id: amazon-ops-product-evaluator
+    kind: python-module
+    taxonomy_role: tool
+    execution_mode: autonomous
+    capabilities: [commerce.product.evaluate]
+    implementation_refs:
+      - Scale-Characters/amazon-ops:scripts/comparar.py
+      - Scale-Characters/amazon-ops#2:integrations/shopee/candidate.py
+    provider_applicable: false
+    status: prototype
+    validation_status: EXPERIMENTAL
+    routing_eligible: false
+    production_eligible: false
+    policy_ref: commerce-evaluation-gates-v1
+    rules:
+      - "Deterministic numeric gates only; LLM does not calculate economic values."
+      - "APPROVED is an economic domain decision, not P0 Approval, and grants no publish/purchase authority."
+      - "Thresholds are policy-owned, not caller inputs."
+      - "Provider is intentionally not applicable; local execution location is not a Provider identity."
+
 rules:
   - Never expose credential values through this registry.
   - execution_mode must describe what is truly automatable today.
   - A web-only product must not be advertised to agents as an autonomous API.
-  - Tools are replaceable implementations of skills/capabilities, never product-level dependencies by default.
+  - Tool/API surfaces are replaceable implementation surfaces and are distinct from providers and adapters.
+  - The current Library has no standalone Adapter entity; adapter identity remains referenced from aligned Agents binding contracts pending a dedicated taxonomy follow-up.
+  - Discovery metadata is not execution authorization.
+  - DISABLED marketplace tools are discoverable but never routing-eligible.
