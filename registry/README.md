@@ -81,7 +81,7 @@ The Arsenal currently records:
 
 `EXECUTOR` is a separate TaskOps/Executor Router concern and is not a synonym for any entity above.
 
-The current registry does **not** have a standalone Adapter entity. This PR does not invent one or create a parallel registry. Marketplace tool records therefore remain Tool/API surfaces, while adapter identity is referenced from `Ginkgo-Core/ginkgo-agents#9` when an adapter boundary exists. A dedicated Adapter taxonomy/registry, if adopted, requires a follow-up architecture decision across the Library rather than a Commerce-only one-off.
+The current registry does **not** have a standalone Adapter entity. This PR does not invent one or create a parallel registry. Internal binding records may carry the canonical `adapter_id` defined by `Ginkgo-Core/ginkgo-agents#9`, while Tool records exist only when a distinct concrete execution/tool surface is actually represented. A Tool ID must never reuse an Adapter ID. For the current Shopee read bindings, no separate Shopee API Tool surface is registered; `shopee-open-api` is reserved for the Adapter identity. A dedicated Adapter registry, if adopted, requires a follow-up architecture decision across the Library rather than a Commerce-only one-off.
 
 ## Files
 
@@ -101,7 +101,7 @@ The current registry does **not** have a standalone Adapter entity. This PR does
 CALLER != CAPABILITY != SKILL != BINDING != TOOL != ADAPTER != PROVIDER != EXECUTOR
 ```
 
-Network Commerce example:
+Amazon network Commerce example:
 
 ```text
 public capability: commerce.catalog.search
@@ -110,6 +110,18 @@ tool/API surface:  amazon-sp-api
 adapter identity:   amazon-spapi (defined/referenced by aligned Agents contract)
 provider:           amazon-selling-partner
 ```
+
+Shopee network Commerce example:
+
+```text
+public capability: commerce.catalog.read
+internal binding:  shopee-open-api.catalog.read
+tool/API surface:  n/a in this PR
+adapter identity:   shopee-open-api
+provider:           shopee-open-platform
+```
+
+`shopee-open-api` is therefore an Adapter identity only. A future Shopee Tool/API surface, if registered, must use a distinct Tool identity rather than reusing the Adapter ID.
 
 Local normalization example:
 
@@ -262,6 +274,8 @@ minimum_operating_margin_pct: 60
 minimum_contribution_brl: 30
 caller_may_override: false
 ```
+
+Its Tool is `amazon-ops-product-evaluator` (`kind: python-module`, `taxonomy_role: tool`). Adapter and Provider are not applicable. `local` is execution location semantics, not a Provider identity, and is not attached to the evaluator as `provider` or `preferred_providers`.
 
 Its domain decision `APPROVED` is not P0 Approval and grants no authority to publish, purchase, change pricing, change inventory or fulfill orders.
 
