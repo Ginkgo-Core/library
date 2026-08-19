@@ -13,11 +13,11 @@ This registry references, and does not duplicate, the P0 freeze in `Ginkgo-Core/
 
 Skill/binding behavior is defined by the aligned contracts in `Ginkgo-Core/ginkgo-agents#9`.
 
-Canonical audited references for this correction:
+Canonical integrated references for this correction:
 
-- `Ginkgo-Core/ai-stack#15` — `5c45ab7a7348e8f50ccef5162e391907e108c378`
-- `Ginkgo-Core/ai-stack#9` — `4dcc3317c43affd4e34b6285cf08cbf252015cf2`
-- `Ginkgo-Core/ginkgo-agents#9` — `27564bc64f534e23f69fb191f493575aff6d0385`
+- `Ginkgo-Core/ai-stack#15` — merged baseline `778b6ba8a2e2681357e2726f7d8b343a32537dcf`
+- `Ginkgo-Core/ai-stack#9` — merged baseline `b47f72c8d8b193afdb5ef69e92e7ae8e557fd829`
+- `Ginkgo-Core/ginkgo-agents#9` — merged baseline `89247220ffa15238cff209dba13088eae1a1a641`
 
 Architecture precedence is therefore:
 
