@@ -1,5 +1,5 @@
-version: 4
-updated_at: 2026-08-19
+version: 5
+updated_at: 2026-08-20
 
 # Capability = provider-agnostic public semantic contract.
 # Skill/binding = internal implementation possibility declared for Domain Router discovery.
@@ -15,6 +15,79 @@ capabilities:
     purpose: Source-grounded learning, synthesis and question answering over curated source sets.
     preferred_skills: [knowledge.ingest-source-set, knowledge.promote-pattern]
     output_contract: notebook-synthesis
+
+  - id: knowledge.document.search
+    purpose: Search governed workspace/document knowledge through a normalized provider-agnostic boundary.
+    bindings:
+      - skill_id: notion-api.document.search
+        when:
+          workspace_provider: notion
+        routing_eligible: false
+    output_contract: knowledge-document-search-result
+    lifecycle_ceiling: FEATURE
+
+  - id: knowledge.document.read
+    purpose: Read one governed workspace/document resource through a normalized provider-agnostic boundary.
+    bindings:
+      - skill_id: notion-api.document.read
+        when:
+          workspace_provider: notion
+        routing_eligible: false
+    output_contract: knowledge-document
+    lifecycle_ceiling: FEATURE
+
+  - id: knowledge.document.publish
+    purpose: Publish or update a governed knowledge document through an authorized workspace provider.
+    bindings:
+      - skill_id: notion-api.document.publish
+        when:
+          workspace_provider: notion
+        routing_eligible: false
+    output_contract: knowledge-document-publish-result
+    lifecycle_ceiling: FEATURE
+    rules:
+      - Write authority is policy-resolved and never implied by read access.
+      - Publication to Notion does not automatically promote content to canonical Ginkgo Knowledge.
+
+  - id: work.task.create
+    purpose: Create a work-management task through a governed provider-agnostic contract.
+    bindings:
+      - skill_id: notion-api.task.create
+        when:
+          workspace_provider: notion
+        routing_eligible: false
+    output_contract: work-task-result
+    lifecycle_ceiling: FEATURE
+
+  - id: work.task.update
+    purpose: Update a work-management task through a governed provider-agnostic contract.
+    bindings:
+      - skill_id: notion-api.task.update
+        when:
+          workspace_provider: notion
+        routing_eligible: false
+    output_contract: work-task-result
+    lifecycle_ceiling: FEATURE
+
+  - id: work.project.read
+    purpose: Read normalized project state from an authorized work-management provider.
+    bindings:
+      - skill_id: notion-api.project.read
+        when:
+          workspace_provider: notion
+        routing_eligible: false
+    output_contract: work-project
+    lifecycle_ceiling: FEATURE
+
+  - id: work.project.update
+    purpose: Update normalized project state through an authorized work-management provider.
+    bindings:
+      - skill_id: notion-api.project.update
+        when:
+          workspace_provider: notion
+        routing_eligible: false
+    output_contract: work-project-result
+    lifecycle_ceiling: FEATURE
 
   - id: reasoning.long-context
     purpose: Large-context analysis of repositories, documents, logs and mixed source packs.
@@ -187,3 +260,4 @@ routing_principles:
   - "Do not infer API entitlement from a consumer subscription."
   - "A web-only product must remain marked human-assisted until a real autonomous integration exists."
   - "Marketplace selection is a routing constraint; never silently cross marketplaces."
+  - "Workspace-provider selection is policy/routing context, never direct caller authority over provider identity."
