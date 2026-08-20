@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-08-17
+updated_at: 2026-08-19
 schema: ../LIBRARY_SCHEMA.md
 
 items:
@@ -34,6 +34,40 @@ items:
       - hosted
     record: 40-media/video/higgsfield.md
     source_verified_at: 2026-08-17
+
+  - id: agent-foundry-upstreams
+    name: Agent Foundry Upstream Research Set
+    category: engineering.agent-skills
+    status: feature
+    maturity: F1
+    priority: high
+    open_source: mixed
+    self_hostable: not-applicable
+    canonical_owner: ginkgo-agents
+    ginkgo_products:
+      - ginkgo-agents
+      - ai-stack
+      - ginkgo-library
+    capabilities: []
+    integration_surfaces:
+      - skill-package
+      - agent-harness
+      - github
+    tags:
+      - agent-skills
+      - evals
+      - context-management
+      - provenance
+      - continuous-learning
+      - multi-agent
+      - autonomous-repo-ops
+    record: ../AGENT_FOUNDRY_PROVENANCE.md
+    registry_pack: agent-foundry.yaml
+    source_registry: sources/agent-skill-upstreams.yaml
+    source_verified_at: 2026-08-19
+    runtime_authority: false
+    routing_eligible: false
+    production_eligible: false
 
 # Canonical machine-readable registry.
 # Add one compact entry per curated technology/pattern.
