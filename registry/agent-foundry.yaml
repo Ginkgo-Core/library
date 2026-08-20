@@ -1,0 +1,119 @@
+version: 1
+updated_at: 2026-08-19
+kind: agent_foundry_discovery_pack
+runtime_authority: false
+lifecycle_status: FEATURE
+maturity: F1
+priority: P1
+
+architecture_precedence:
+  - Ginkgo-Core/ai-stack/ARCHITECTURE-INVARIANTS.md
+  - Ginkgo-Core/ai-stack/architecture/agent-foundry.md
+  - Ginkgo-Core/ginkgo-agents/AGENT_FOUNDRY.md
+
+invariants:
+  - CAPABILITY_NE_SKILL_NE_BINDING_NE_TOOL_NE_ADAPTER_NE_PROVIDER_NE_EXECUTOR
+  - DISCOVERABLE_NE_ROUTING_ELIGIBLE_NE_PRODUCTION_ELIGIBLE
+  - library_is_metadata_not_runtime_authority
+  - github_is_architecture_and_promotion_evidence_source
+  - runtime_state_is_not_stored_in_registry
+  - source_presence_is_not_validation
+  - provenance_and_license_gate_before_reuse
+
+source_registry: registry/sources/agent-skill-upstreams.yaml
+
+records:
+  - id: engineering.skill.author
+    kind: internal_agent_workflow_candidate
+    behavior_source: Ginkgo-Core/ginkgo-agents
+    lifecycle_status: FEATURE
+    discoverable: true
+    routing_eligible: false
+    production_eligible: false
+    purpose: author minimal provenance-backed Agent Skill packages
+    source_concepts: [anthropics-skills, mattpocock-skills, obra-superpowers]
+
+  - id: engineering.skill.eval
+    kind: internal_agent_workflow_candidate
+    behavior_source: Ginkgo-Core/ginkgo-agents
+    lifecycle_status: FEATURE
+    discoverable: true
+    routing_eligible: false
+    production_eligible: false
+    purpose: run behavioral and retrieval evals with immutable evidence
+    source_concepts: [obra-superpowers, mattpocock-skills]
+
+  - id: engineering.skill.discovery
+    kind: internal_agent_workflow_candidate
+    behavior_source: Ginkgo-Core/ginkgo-agents
+    lifecycle_status: FEATURE
+    discoverable: true
+    routing_eligible: false
+    production_eligible: false
+    purpose: load minimum relevant skill context from trigger metadata
+    source_concepts: [anthropics-skills, mattpocock-skills]
+
+  - id: engineering.skill.security.scan
+    kind: internal_agent_workflow_candidate
+    behavior_source: Ginkgo-Core/ginkgo-agents
+    lifecycle_status: FEATURE
+    discoverable: true
+    routing_eligible: false
+    production_eligible: false
+    purpose: statically scan skills, hooks, MCP config, permissions and provenance
+    source_concepts: [affaan-ecc, obra-superpowers]
+
+  - id: engineering.subagent.execute
+    kind: internal_agent_workflow_candidate
+    behavior_source: Ginkgo-Core/ginkgo-agents
+    lifecycle_status: FEATURE
+    discoverable: true
+    routing_eligible: false
+    production_eligible: false
+    purpose: execute approved plans with isolated subagents and two-stage review
+    source_concepts: [obra-superpowers, ultraworkers-claw-code]
+
+  - id: engineering.learning.promote
+    kind: internal_agent_workflow_candidate
+    behavior_source: Ginkgo-Core/ginkgo-agents
+    lifecycle_status: FEATURE
+    discoverable: true
+    routing_eligible: false
+    production_eligible: false
+    purpose: convert repeated evidence into governed candidate lessons and skill proposals
+    source_concepts: [affaan-ecc, obra-superpowers]
+
+  - id: engineering.event.route
+    kind: internal_agent_workflow_candidate
+    behavior_source: Ginkgo-Core/ginkgo-agents
+    lifecycle_status: FEATURE
+    discoverable: true
+    routing_eligible: false
+    production_eligible: false
+    purpose: route normalized agent and repository events outside worker context
+    source_concepts: [ultraworkers-claw-code]
+
+  - id: engineering.repo.autonomous.maintain
+    kind: internal_agent_workflow_candidate
+    behavior_source: Ginkgo-Core/ginkgo-agents
+    lifecycle_status: FEATURE
+    discoverable: true
+    routing_eligible: false
+    production_eligible: false
+    purpose: bounded agent-managed repository operations through Draft-PR handoff
+    source_concepts: [ultraworkers-claw-code, obra-superpowers, affaan-ecc]
+
+promotion_evidence:
+  current_status: none_for_promotion
+  source_inspection_only: true
+  required_before_any_validation_claim:
+    - accepted_agent_skill_package_contract
+    - accepted_skill_eval_contract
+    - Ginkgo_owned_eval_results
+    - tested_commit_pins
+    - provenance_and_license_decisions
+    - context_budget_evidence
+    - permission_and_mutation_guardrail_evidence
+    - reviewer_decision
+
+fallback_policy: none
