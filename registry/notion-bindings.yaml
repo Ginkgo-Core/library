@@ -1,0 +1,78 @@
+version: 1
+updated_at: 2026-08-20
+provider: notion
+lifecycle_status: FEATURE
+routing_eligible: false
+production_eligible: false
+
+adapters:
+  - id: notion-api
+    kind: provider-adapter
+    transport: rest-api
+    status: planned-unvalidated
+  - id: notion-mcp
+    kind: provider-adapter
+    transport: hosted-mcp
+    status: planned-unvalidated
+  - id: notion-webhook
+    kind: event-source-adapter
+    transport: webhook
+    status: planned-unvalidated
+
+bindings:
+  - id: notion-api.document.search
+    capability: knowledge.document.search
+    adapter: notion-api
+    provider: notion
+  - id: notion-api.document.read
+    capability: knowledge.document.read
+    adapter: notion-api
+    provider: notion
+  - id: notion-api.document.publish
+    capability: knowledge.document.publish
+    adapter: notion-api
+    provider: notion
+  - id: notion-api.task.create
+    capability: work.task.create
+    adapter: notion-api
+    provider: notion
+  - id: notion-api.task.update
+    capability: work.task.update
+    adapter: notion-api
+    provider: notion
+  - id: notion-api.project.read
+    capability: work.project.read
+    adapter: notion-api
+    provider: notion
+  - id: notion-api.project.update
+    capability: work.project.update
+    adapter: notion-api
+    provider: notion
+
+mcp_policy:
+  purpose: agent-oriented alternate interface to the same Notion provider
+  public_capability: false
+  caller_selectable: false
+  routing_eligible: false
+  requirements: [oauth_scoping, permission_tests, normalized_contracts, audit_evidence]
+
+webhook_policy:
+  public_capability: false
+  authority: signal_only
+  path: Notion -> notion-webhook -> Event Gateway -> Identity/Policy -> TaskOps/Capability Bus
+  requirements: [signature_validation, deduplication, provenance, replay_safety]
+
+executor_candidate:
+  id: notion-custom-agent
+  kind: external-executor-candidate
+  priority: P2
+  routing_eligible: false
+  production_eligible: false
+  requirements: [executor_contract, identity, permission_scope, cost_limits, audit_logs, timeout, cancellation, idempotency, sandbox_evidence]
+
+rules:
+  - Public capabilities never use notion.* names.
+  - Callers never select provider, adapter, transport, endpoint or credentials.
+  - Provider integration is distinct from Custom Agent execution.
+  - Registry metadata never authorizes runtime execution.
+  - Default fallback is none.
