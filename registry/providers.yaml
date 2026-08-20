@@ -1,5 +1,5 @@
-version: 3
-updated_at: 2026-08-18
+version: 4
+updated_at: 2026-08-20
 
 providers:
   - id: google-ai
@@ -79,6 +79,48 @@ providers:
     access_modes: [api]
     capabilities: [image-generation, video-generation, audio, model-inference]
     canonical_role: provider-behind-capability-router
+
+  - id: notion
+    name: Notion
+    kind: external-workspace-knowledge-provider
+    status: planned-unvalidated
+    access_modes: [api, mcp, webhook]
+    capabilities:
+      - document-search
+      - document-read
+      - document-publish
+      - task-create
+      - task-update
+      - project-read
+      - project-update
+      - workspace-events
+    canonical_role: human-workspace-and-knowledge-provider-behind-notion-adapters
+    routing_eligible: false
+    production_eligible: false
+    adapters: [notion-api, notion-mcp, notion-webhook]
+    source_of_truth_boundaries:
+      github: architecture-code-and-versioned-engineering-docs
+      postgresql: operational-runtime-state
+      notion: human-workspace-and-knowledge-surface
+    executor_candidate:
+      id: notion-custom-agent
+      priority: P2
+      routing_eligible: false
+      production_eligible: false
+      rule: "Notion provider integration and Notion Custom Agent execution are separate architectural roles."
+    canonical_docs:
+      - https://developers.notion.com/guides/mcp/overview
+      - https://developers.notion.com/reference/webhooks
+      - https://www.notion.com/help/custom-agents
+    rules:
+      - "Public Ginkgo capabilities remain provider-agnostic; callers never request notion, notion-api, notion-mcp or notion-webhook directly."
+      - "Provider registry presence is discovery metadata only and is not runtime authorization."
+      - "Notion is not the runtime state source of truth, event bus, queue, vector database authority, secret store, Capability Bus, or architecture source of truth."
+      - "Webhook events are signals and must pass Event Gateway plus Identity/Policy before TaskOps or capability execution."
+      - "MCP access is permission-sensitive and requires governed identity and policy scoping."
+      - "Writes remain blocked until reversible governed write evidence exists."
+      - "Custom Agents remain a separate P2 External Executor candidate and are non-routable in this feature."
+    verified_at: 2026-08-20
 
   - id: amazon-selling-partner
     name: Amazon Selling Partner
