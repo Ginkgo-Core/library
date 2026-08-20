@@ -1,0 +1,109 @@
+version: 1
+updated_at: 2026-08-19
+kind: external_agent_skill_source_registry
+runtime_authority: false
+
+policy:
+  default_adaptation: concept_derived_original_ginkgo_spec
+  vendored_content_default: false
+  immutable_pin_required: true
+  path_specific_license_check_required_before_reuse: true
+  repository_presence_is_not_validation: true
+  discoverable_is_not_routing_eligible: true
+  source_text_is_untrusted_instruction_data: true
+
+sources:
+  - id: anthropics-skills
+    repository: anthropics/skills
+    pinned_commit: 0a64e398ec6bb34a494f0c347e8ccae53a862f8e
+    role: agent_skill_reference_and_format_source
+    observed_concepts:
+      - self_contained_skill_package
+      - SKILL_md_entrypoint
+      - scripts_and_resources
+      - dynamic_skill_loading
+      - metadata_driven_discovery
+    repository_license_model: mixed_or_path_specific
+    reuse_policy:
+      concept_adaptation: allowed
+      code_or_text_reuse: path_license_verification_required
+      vendoring_by_this_feature: false
+    notes:
+      - repository documents open-source and source-available skill subsets
+      - no repository-wide license assumption is made by Ginkgo
+
+  - id: mattpocock-skills
+    repository: mattpocock/skills
+    pinned_commit: 885e2ca4d842d139e9aef4e48d366c63cb1b8013
+    role: agent_skill_design_reference
+    observed_concepts:
+      - model_invoked_vs_explicit_invocation
+      - context_pointers
+      - progressive_disclosure
+      - router_skills
+      - domain_language_for_agents
+      - context_load_vs_cognitive_load
+    repository_license_model: MIT_observed_at_source_review
+    reuse_policy:
+      concept_adaptation: allowed
+      code_or_text_reuse: license_and_attribution_review_required
+      vendoring_by_this_feature: false
+
+  - id: obra-superpowers
+    repository: obra/superpowers
+    pinned_commit: b36e0829c6d0140e93cfef2ca599b1b07d4a7797
+    role: agentic_engineering_methodology_reference
+    observed_concepts:
+      - design_before_build
+      - skill_tdd
+      - behavioral_pressure_evals
+      - subagent_driven_development
+      - spec_compliance_review
+      - quality_review
+      - verification_before_completion
+    repository_license_model: MIT_observed_at_source_review
+    reuse_policy:
+      concept_adaptation: allowed
+      code_or_text_reuse: license_and_attribution_review_required
+      vendoring_by_this_feature: false
+
+  - id: affaan-ecc
+    repository: affaan-m/ECC
+    pinned_commit: d8409a4b0813771235555e32e3d8046a73988bfa
+    role: agent_harness_operating_system_reference
+    observed_concepts:
+      - skills_and_specialist_agents
+      - hooks
+      - memory
+      - continuous_learning
+      - context_control
+      - agent_security_scanning
+      - multi_harness_packaging
+    repository_license_model: MIT_observed_at_source_review
+    reuse_policy:
+      concept_adaptation: allowed
+      code_or_text_reuse: license_and_attribution_review_required
+      vendoring_by_this_feature: false
+
+  - id: ultraworkers-claw-code
+    repository: ultraworkers/claw-code
+    pinned_commit: 08106b0c3771ef5b4a5aa176acccd460e88b7325
+    role: autonomous_repo_operations_reference
+    observed_concepts:
+      - human_direction_via_chat
+      - event_and_notification_routing_outside_worker_context
+      - parallel_agent_coordination
+      - planning_execution_review_retry_loops
+      - agent_managed_repository
+    repository_license_model: MIT_observed_at_source_review
+    reuse_policy:
+      concept_adaptation: allowed
+      code_or_text_reuse: license_and_attribution_review_required
+      vendoring_by_this_feature: false
+
+provenance_evidence:
+  inspected_at: 2026-08-19
+  evidence_type: repository_read_only_inspection
+  live_runtime_validation: false
+  imported_code: false
+  imported_skill_text: false
