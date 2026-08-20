@@ -1,0 +1,351 @@
+schema_version: "1.0"
+registry_id: open-source-monetization-opportunities
+status: curated
+runtime_authority: false
+routing_eligible: false
+production_eligible: false
+source_verified_at: 2026-08-20
+
+scoring_model:
+  scale: "0-5 per factor"
+  output_scale: "0-100"
+  formula: "sum((rating / 5) * weight)"
+  factors:
+    revenue_proximity:
+      weight: 25
+      description: direct connection to revenue, cost reduction or throughput
+    speed_to_pilot:
+      weight: 20
+      description: ability to assemble a credible end-to-end pilot quickly
+    recurring_value:
+      weight: 15
+      description: natural weekly or monthly repeat usage
+    defensibility:
+      weight: 15
+      description: switching cost created by data, integrations and operating history
+    margin_potential:
+      weight: 10
+      description: potential to scale without proportional human labor
+    ginkgo_stack_leverage:
+      weight: 10
+      description: reuse of existing orchestration, WhatsApp, CRM, RAG and analytics assets
+    license_confidence:
+      weight: 5
+      description: commercial-use clarity for the intended deployment model
+
+opportunities:
+  - id: revenue-agent
+    name: Revenue Agent
+    priority: P0-commercial-experiment
+    score: 92
+    buyer_segments:
+      - local-business
+      - b2b-services
+      - real-estate
+      - clinics
+    outcomes:
+      - qualified-meetings
+      - pipeline-reactivation
+      - faster-follow-up
+      - attributable-revenue-activity
+    monetization:
+      setup_fee: true
+      monthly_managed_service: true
+      usage_based: optional
+      outcome_based: optional
+    candidate_components:
+      orchestration:
+        - n8n
+        - activepieces
+      data:
+        - supabase
+      agents:
+        - langflow
+        - crewai
+      browser_workers:
+        - browser-use
+      channels:
+        - evolution-api
+        - official-whatsapp-provider
+        - email
+      business_systems:
+        - crm
+        - calendar
+      analytics:
+        - attribution-dashboard
+    required_controls:
+      - authorized-data-source
+      - consent-policy
+      - opt-out
+      - rate-limit
+      - evidence-capture
+      - human-approval-when-required
+      - audit-log
+    promotion_targets:
+      - Ginkgo-Core/ai-stack
+      - Ginkgo-Core/ginkgo-agents
+      - product-repository
+    candidate_capabilities:
+      - revenue.lead.normalize
+      - revenue.lead.enrich
+      - revenue.lead.qualify
+      - revenue.outreach.prepare
+      - revenue.followup.plan
+      - revenue.meeting.attribute
+    evidence_required:
+      minimum_for_prototype:
+        - E0
+        - E1
+      minimum_for_pilot:
+        - E2
+        - E3
+      minimum_for_production_candidate:
+        - E4
+        - E5
+
+  - id: whatsapp-knowledge-agent
+    name: WhatsApp Knowledge Agent
+    priority: P0-P1
+    score: 89
+    buyer_segments:
+      - service-business
+      - commerce
+      - real-estate
+      - internal-operations
+    outcomes:
+      - lower-response-time
+      - higher-resolution-rate
+      - reduced-manual-support-load
+      - improved-lead-capture
+    monetization:
+      setup_fee: true
+      monthly_managed_service: true
+      per_conversation: optional
+      per_resolved_case: optional
+    candidate_components:
+      orchestration:
+        - n8n
+        - activepieces
+      knowledge:
+        - dify
+        - langflow
+        - supabase
+      channel:
+        - evolution-api
+        - official-whatsapp-provider
+      evaluation:
+        - agenta
+    required_controls:
+      - tenant-isolation
+      - identity
+      - consent
+      - knowledge-provenance
+      - confidence-gate
+      - human-handoff
+      - audit-log
+      - evaluation-metrics
+    promotion_targets:
+      - Ginkgo-Core/ai-stack
+      - Ginkgo-Core/ginkgo-agents
+      - leaf-or-client-product
+
+  - id: backoffice-process-agents
+    name: Backoffice Process Agents
+    priority: P1
+    score: 86
+    buyer_segments:
+      - operations-teams
+      - finance-ops
+      - sales-ops
+      - customer-ops
+      - commerce-ops
+    outcomes:
+      - lower-cycle-time
+      - reduced-manual-hours
+      - lower-error-rate
+      - auditable-execution
+    processes:
+      - order-checking
+      - portal-operations
+      - crm-updates
+      - proposal-preparation
+      - ticket-triage
+      - document-intake
+      - reconciliation-support
+      - recurring-reporting
+    candidate_components:
+      - browser-use
+      - crewai
+      - langflow
+      - dify
+      - n8n
+      - typescript-workers
+      - python-workers
+    required_controls:
+      - queue
+      - idempotency
+      - least-privilege
+      - irreversible-action-approval
+      - evidence-capture
+      - replay-recovery
+      - cost-limit
+      - observability
+    candidate_capabilities:
+      - operations.task.prepare
+      - operations.task.execute_guarded
+      - operations.evidence.capture
+      - operations.process.measure
+
+  - id: vertical-content-factory
+    name: Vertical Content Factory
+    priority: P1
+    score: 80
+    buyer_segments:
+      - real-estate
+      - local-retail
+      - education
+      - professional-services
+      - franchises
+      - ecommerce
+      - b2b-founders
+    outcomes:
+      - consistent-distribution
+      - faster-content-production
+      - lead-acquisition
+      - measurable-content-performance
+    candidate_components:
+      - moneyprinterturbo
+      - shortgpt
+      - comfyui
+      - n8n
+      - custom-media-workers
+    required_controls:
+      - source-provenance
+      - copyright-review
+      - brand-qa
+      - human-review
+      - platform-policy-check
+      - performance-attribution
+    candidate_capabilities:
+      - content.plan
+      - content.research
+      - content.compose
+      - content.qa
+      - content.distribute
+      - content.performance.measure
+    product_rule: "video generation alone is not the product; the defensible loop is content -> distribution -> lead -> attribution"
+
+  - id: ai-engineering-factory
+    name: AI Engineering Factory
+    priority: P1-P2
+    score: 76
+    buyer_segments:
+      - internal-engineering
+      - startups
+      - software-maintenance
+    outcomes:
+      - faster-scoped-delivery
+      - lower-maintenance-time
+      - improved-test-coverage
+      - controlled-migrations
+    candidate_components:
+      - openhands
+      - coding-agents
+      - browser-qa
+      - ci
+      - repository-intelligence
+    required_controls:
+      - branch-isolation
+      - human-review
+      - test-evidence
+      - ci-gate
+      - no-secret-exposure
+      - rollback-path
+    posture: "internal or managed engineering factory before autonomous external product"
+
+upstream_projects:
+  - id: n8n
+    url: https://github.com/n8n-io/n8n
+    role: workflow-orchestration
+    source_license_posture: sustainable-use-license-fair-code
+    adoption_note: internal and consulting usage may fit; product embedding/white-label requires explicit review
+  - id: dify
+    url: https://github.com/langgenius/dify
+    role: agent-workflow-rag-app-platform
+    source_license_posture: apache-based-with-additional-conditions
+    adoption_note: audit multi-tenant and branding constraints
+  - id: langflow
+    url: https://github.com/langflow-ai/langflow
+    role: visual-agent-pipelines
+    source_license_posture: MIT
+  - id: browser-use
+    url: https://github.com/browser-use/browser-use
+    role: browser-agent-automation
+    source_license_posture: MIT
+  - id: crewai
+    url: https://github.com/crewAIInc/crewAI
+    role: multi-agent-orchestration
+    source_license_posture: MIT
+  - id: openhands
+    url: https://github.com/OpenHands/OpenHands
+    role: software-engineering-agent
+    source_license_posture: MIT
+  - id: comfyui
+    url: https://github.com/Comfy-Org/ComfyUI
+    role: media-pipeline
+    source_license_posture: GPL-3.0
+    adoption_note: models and dependent assets may have separate licenses
+  - id: moneyprinterturbo
+    url: https://github.com/harry0703/MoneyPrinterTurbo
+    role: short-form-video-automation
+    source_license_posture: MIT
+  - id: shortgpt
+    url: https://github.com/RayVentura/ShortGPT
+    role: short-video-automation
+    source_license_posture: MIT
+  - id: activepieces
+    url: https://github.com/activepieces/activepieces
+    role: workflow-automation
+    source_license_posture: audit-required
+  - id: agenta
+    url: https://github.com/Agenta-AI/agenta
+    role: agent-evaluation
+    source_license_posture: audit-required
+
+promotion_policy:
+  library_entry_does_not_authorize_runtime: true
+  repository_popularity_is_not_production_evidence: true
+  provider_or_tool_names_must_not_define_public_business_capabilities: true
+  upstream_components_should_be_replaceable: true
+  required_gates:
+    - canonical-source-recorded
+    - license-reviewed-for-intended-deployment
+    - platform-terms-identified
+    - buyer-pain-validated
+    - end-to-end-evidence
+    - audit-path
+    - permissions-and-approval-policy
+    - cost-to-serve-bounded
+    - pricing-hypothesis-tested
+    - roi-metric-defined
+    - fallback-semantics-documented
+    - canonical-promotion-target-identified
+
+evidence_levels:
+  E0: source-and-license-provenance
+  E1: technical-feasibility
+  E2: controlled-end-to-end-pilot
+  E3: buyer-validation
+  E4: economic-evidence
+  E5: repeatability-evidence
+
+anti_patterns:
+  - clone-viral-repo-and-call-it-a-business
+  - faceless-content-volume-without-distribution-advantage
+  - uncontrolled-browser-agent
+  - unauthorized-scraping
+  - whatsapp-spam
+  - unreviewed-multitenant-resale
+  - upstream-specific-public-capability-contracts
+  - automation-without-evidence-or-recovery
+  - roi-claims-without-baseline
