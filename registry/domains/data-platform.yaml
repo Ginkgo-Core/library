@@ -1,0 +1,369 @@
+version: 1
+updated_at: 2026-08-20
+domain: data-platform
+status: FEATURE
+priority: P0_FOUNDATION
+routing_eligible: false
+production_eligible: false
+runtime_authority: false
+
+# Discovery/provenance metadata only.
+# Canonical taxonomy:
+# CAPABILITY != SKILL != BINDING != TOOL != ADAPTER != PROVIDER != EXECUTOR
+
+capabilities:
+  - id: data.record.read
+    purpose: Read authorized structured records independently of the backing provider.
+    bindings:
+      - binding_id: supabase-postgrest.record.read
+        routing_eligible: false
+    lifecycle_ceiling: FEATURE
+
+  - id: identity.user.read
+    purpose: Read authorized identity/profile state under tenant and privacy policy.
+    bindings:
+      - binding_id: supabase-auth.user.read
+        routing_eligible: false
+    lifecycle_ceiling: FEATURE
+
+  - id: storage.object.read
+    purpose: Read authorized object metadata or content through a normalized storage contract.
+    bindings:
+      - binding_id: supabase-storage.object.read
+        routing_eligible: false
+    lifecycle_ceiling: FEATURE
+
+  - id: knowledge.vector.search
+    purpose: Retrieve authorized semantic/vector matches without exposing the vector implementation to callers.
+    bindings:
+      - binding_id: supabase-pgvector.search
+        routing_eligible: false
+    lifecycle_ceiling: FEATURE
+
+  - id: database.schema.inspect
+    purpose: Inspect authorized database schema metadata without granting mutation authority.
+    bindings:
+      - binding_id: supabase-mcp.schema.inspect
+        routing_eligible: false
+    lifecycle_ceiling: FEATURE
+
+  - id: events.stream.subscribe
+    purpose: Subscribe to authorized changes through a normalized realtime event contract.
+    bindings:
+      - binding_id: supabase-realtime.subscribe
+        routing_eligible: false
+    lifecycle_ceiling: FEATURE
+
+  - id: functions.invoke
+    purpose: Invoke a governed function contract while preserving function-specific side-effect policy.
+    bindings:
+      - binding_id: supabase-edge-functions.invoke
+        routing_eligible: false
+    lifecycle_ceiling: FEATURE
+
+candidate_write_capabilities:
+  - id: data.record.write
+    status: CANDIDATE_ONLY
+    default_authority: DENY
+  - id: storage.object.write
+    status: CANDIDATE_ONLY
+    default_authority: DENY
+  - id: knowledge.vector.upsert
+    status: CANDIDATE_ONLY
+    default_authority: DENY
+  - id: identity.user.manage
+    status: CANDIDATE_ONLY
+    default_authority: DENY
+  - id: database.schema.change
+    status: CANDIDATE_ONLY
+    default_authority: DENY
+
+bindings:
+  - id: supabase-postgrest.record.read
+    taxonomy_role: binding
+    capability: data.record.read
+    lifecycle_status: FEATURE
+    adapter_candidates: [supabase-js, supabase-py, supabase-mcp]
+    provider: supabase
+    provider_surface: postgrest
+    authority: read_only
+    caller_selectable: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: supabase-auth.user.read
+    taxonomy_role: binding
+    capability: identity.user.read
+    lifecycle_status: FEATURE
+    adapter_candidates: [supabase-js, supabase-py, supabase-mcp]
+    provider: supabase
+    provider_surface: auth
+    authority: read_only
+    caller_selectable: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: supabase-storage.object.read
+    taxonomy_role: binding
+    capability: storage.object.read
+    lifecycle_status: FEATURE
+    adapter_candidates: [supabase-js, supabase-py]
+    provider: supabase
+    provider_surface: storage
+    authority: read_only
+    caller_selectable: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: supabase-pgvector.search
+    taxonomy_role: binding
+    capability: knowledge.vector.search
+    lifecycle_status: FEATURE
+    adapter_candidates: [supabase-js, supabase-py, supabase-mcp]
+    provider: supabase
+    provider_surface: postgres_pgvector
+    authority: read_only
+    caller_selectable: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: supabase-mcp.schema.inspect
+    taxonomy_role: binding
+    capability: database.schema.inspect
+    lifecycle_status: FEATURE
+    adapter_candidates: [supabase-mcp]
+    provider: supabase
+    provider_surface: database_management
+    authority: read_only
+    caller_selectable: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: supabase-realtime.subscribe
+    taxonomy_role: binding
+    capability: events.stream.subscribe
+    lifecycle_status: FEATURE
+    adapter_candidates: [supabase-js, supabase-py]
+    provider: supabase
+    provider_surface: realtime
+    authority: event_consume
+    caller_selectable: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+  - id: supabase-edge-functions.invoke
+    taxonomy_role: binding
+    capability: functions.invoke
+    lifecycle_status: FEATURE
+    adapter_candidates: [supabase-js, supabase-py]
+    provider: supabase
+    provider_surface: edge_functions
+    authority: function_contract_defined
+    caller_selectable: false
+    fallback_policy: none
+    routing_eligible: false
+    production_eligible: false
+
+adapters:
+  - id: supabase-js
+    taxonomy_role: adapter
+    upstream: supabase/supabase-js
+    language: typescript_javascript
+    provider: supabase
+    caller_selectable: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: supabase-py
+    taxonomy_role: adapter
+    upstream: supabase/supabase-py
+    language: python
+    provider: supabase
+    caller_selectable: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: supabase-mcp
+    taxonomy_role: adapter_tool_boundary
+    upstream: supabase/mcp
+    protocol: mcp
+    provider: supabase
+    caller_selectable: false
+    routing_eligible: false
+    production_eligible: false
+    default_policy_profile:
+      project_scoped: true
+      read_only: true
+      features: explicit_allowlist
+      mutation_tools: excluded
+      account_level_tools: excluded_unless_explicitly_required
+
+tools:
+  - id: supabase-mcp-tool-catalog
+    taxonomy_role: tool_catalog
+    protocol: mcp
+    upstream: supabase/mcp
+    purpose: Candidate agent tool surface for governed Supabase operations.
+    grants_authority_by_discovery: false
+    caller_selectable: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: pgvector
+    taxonomy_role: provider_extension
+    purpose: Vector similarity implementation surface behind semantic retrieval bindings.
+    caller_selectable: false
+    routing_eligible: false
+
+providers:
+  - id: supabase
+    taxonomy_role: provider
+    kind: postgres_application_platform
+    caller_selectable: false
+    profiles:
+      - supabase.hosted
+      - supabase.self_hosted
+      - supabase.local
+    validation_state: UNVALIDATED_IN_GINKGO
+    routing_eligible: false
+    production_eligible: false
+
+procedural_references:
+  - id: upstream.supabase.agent-guidance
+    upstream: supabase/agent-skills
+    taxonomy_role: reference
+    ginkgo_operational_skill: false
+    purpose: Current Supabase implementation, debugging, security and migration guidance for agents.
+
+  - id: upstream.supabase.postgres-best-practices
+    upstream: supabase/agent-skills
+    taxonomy_role: reference
+    ginkgo_operational_skill: false
+    purpose: Postgres query, connection, schema, RLS, concurrency and diagnostics guidance.
+
+policies:
+  - id: supabase-caller-boundary-v1
+    applies_to: [data.record.read, identity.user.read, storage.object.read, knowledge.vector.search, database.schema.inspect, events.stream.subscribe, functions.invoke]
+    rules:
+      - Caller selects semantic capability intent, never Supabase/provider/adapter/binding/tool/endpoint.
+      - Project and tenant scope are resolved from authenticated identity, configuration and policy.
+      - Credential and secret values are forbidden in caller-controlled routing fields.
+
+  - id: supabase-least-privilege-v1
+    applies_to: [supabase-mcp]
+    rules:
+      - Default MCP profile is project-scoped and read-only.
+      - MCP feature groups require an explicit allowlist.
+      - Mutation tools are excluded by default.
+      - Account-level tools are excluded unless a reviewed capability explicitly requires them.
+      - Tool discovery does not grant Ginkgo execution authority.
+
+  - id: supabase-database-security-v1
+    applies_to: [data.record.read, identity.user.read, knowledge.vector.search, database.schema.inspect]
+    rules:
+      - Exposed schema tables require RLS unless a reviewed non-user-exposure exception exists.
+      - Authentication alone is not row authorization; ownership or tenant policy is required.
+      - User-editable metadata is forbidden as an authorization source.
+      - Server-controlled authorization metadata must be used for privileged authorization state.
+      - Views and privileged functions require explicit security review.
+      - SECURITY DEFINER is exception-only and cannot be used as a shortcut around permission errors.
+      - Update policies must validate both current-row access and allowed post-update state.
+
+  - id: supabase-secret-isolation-v1
+    applies_to: [supabase-js, supabase-py, supabase-mcp, supabase]
+    rules:
+      - Service-role and secret keys are forbidden in public clients.
+      - Secret values are forbidden in CapabilityRequest, CapabilityResult, prompts, logs, traces and evidence.
+      - Secret resolution is owned by the governed adapter/runtime boundary.
+      - Secret references may be recorded; secret values may not.
+
+  - id: supabase-mutation-deny-default-v1
+    applies_to: [data.record.write, storage.object.write, knowledge.vector.upsert, identity.user.manage, database.schema.change]
+    rules:
+      - Mutation is DENY by default.
+      - Read capabilities never imply write authority.
+      - Writes require a separate semantic capability, validated binding and identity/tenant authorization.
+      - Approval is required whenever the capability risk policy says so.
+      - Idempotency and post-write verification are mandatory for promotable write bindings.
+      - Schema change is privileged and is never implied by generic SQL or MCP access.
+
+  - id: supabase-evidence-v1
+    applies_to: [data.record.read, identity.user.read, storage.object.read, knowledge.vector.search, database.schema.inspect, events.stream.subscribe, functions.invoke]
+    rules:
+      - Successful transport response alone is not validation evidence.
+      - Evidence records policy decision, mode, normalized result summary, verification method and provenance.
+      - Evidence must be secret-safe and respect data classification.
+      - Cross-tenant negative evidence is required before production promotion for tenant-scoped operations.
+
+  - id: supabase-supply-chain-v1
+    applies_to: [supabase-js, supabase-py, supabase-mcp]
+    rules:
+      - Pin compatible dependency versions and commit lockfiles.
+      - Verify package provenance or signatures when available.
+      - Consult current upstream changelog/documentation for version-sensitive implementation decisions.
+
+fallbacks:
+  data.record.read: none
+  identity.user.read: none
+  storage.object.read: none
+  knowledge.vector.search: none
+  database.schema.inspect: none
+  events.stream.subscribe: none
+  functions.invoke: none
+
+fallback_constraints:
+  future_profile_or_transport_fallback:
+    mode: same_semantics_only
+    requires:
+      - equivalent_auth_and_tenant_scope
+      - equivalent_data_residency
+      - no_risk_or_side_effect_increase
+      - output_contract_compatibility
+      - explicit_evidence
+    silent_downgrade: forbidden
+
+provenance:
+  architecture_ref: Ginkgo-Core/ai-stack:feature/supabase-agentic-foundation-v1:architecture/supabase-agentic-foundation-v1.md
+  skill_atlas_ref: Ginkgo-Core/ginkgo-agents:feature/supabase-agentic-foundation-v1:features/data.supabase.foundation.pack.yaml
+  reviewed_at: 2026-08-20
+  upstream_pins:
+    - repo: supabase/supabase
+      ref: fd8ccf85b78ec216ccb4b6149327e3e8269ab32a
+      role: provider_platform_reference
+    - repo: supabase/supabase-js
+      ref: a249594bc5790929ff090baa64f2d5bb3a40c286
+      role: typescript_adapter_candidate
+    - repo: supabase/supabase-py
+      ref: 80fcba7fde5c2347fa5327c937b4551754732ccb
+      role: python_adapter_candidate
+    - repo: supabase/mcp
+      ref: a4663743b32c89a7bc656f281a29bd2860b66f0f
+      role: mcp_tool_adapter_candidate
+    - repo: supabase/agent-skills
+      ref: 8331f910845103c08d51f6ca1d86ebb7d1f745e3
+      role: procedural_reference
+  vendored_upstream_code: false
+  vendored_upstream_skill_text: false
+
+promotion:
+  allowed: false
+  lifecycle_ceiling: FEATURE
+  requires:
+    - architecture_review
+    - capability_contract_review
+    - canonical_adapter_implementation
+    - fixture_contract_tests
+    - authorization_and_rls_tests
+    - cross_tenant_negative_tests
+    - normalized_error_tests
+    - secret_scan
+    - mcp_scope_and_read_only_tests
+    - one_governed_read_only_e2e_per_promoted_binding_family
+    - write_approval_idempotency_and_verification_tests_before_any_write_promotion
+    - reviewer_approval
