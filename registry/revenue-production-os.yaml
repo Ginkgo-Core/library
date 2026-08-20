@@ -1,0 +1,147 @@
+version: 1
+record_type: business_pattern_registry
+runtime_authority: false
+status: curated
+source_date: 2026-08-20
+
+program:
+  id: revenue-production-os
+  architecture: Ginkgo-Core/ai-stack#34
+  skill_atlas: Ginkgo-Core/ginkgo-agents#14
+  record: 90-business-use-cases/REVENUE_PRODUCTION_OS.md
+
+shared_operational_model:
+  - Campaign
+  - Batch
+  - Job
+  - Asset
+  - Delivery
+  - Performance
+
+engines:
+  - id: faceless-content-factory
+    priority: P0
+    monetization:
+      - batch_fee
+      - recurring_retainer
+      - publication_addon
+      - analytics_addon
+    business_unit: content_batch
+    primary_capabilities:
+      - content.batch.plan
+      - content.batch.produce
+      - content.batch.evaluate
+      - marketing.content.script.generate
+      - media.video.compose
+      - marketing.content.publish
+      - analytics.content.performance.read
+
+  - id: ugc-media-buying
+    priority: P1
+    monetization:
+      - creative_batch_fee
+      - recurring_creative_retainer
+      - media_management_retainer
+    business_unit: creative_batch
+    primary_capabilities:
+      - marketing.ugc.video.generate
+      - marketing.creative.variant.generate
+      - marketing.ads.performance.read
+      - marketing.ads.creative.evaluate
+      - marketing.ads.optimization.propose
+
+  - id: automation-agency
+    priority: P0
+    monetization:
+      - setup_fee
+      - recurring_management
+      - usage_component
+      - optional_outcome_component
+    business_unit: managed_automation_service
+    primary_capabilities:
+      - automation.process.discover
+      - automation.solution.design
+      - automation.workflow.generate
+      - automation.workflow.validate
+      - automation.workflow.monitor
+      - automation.optimization.propose
+
+  - id: freelance-fulfillment
+    priority: P1
+    monetization:
+      - fixed_deliverable_fee
+      - batch_fee
+      - recurring_fulfillment_retainer
+    business_unit: standardized_deliverable
+    primary_capabilities:
+      - services.opportunity.discover
+      - services.proposal.compose
+      - services.job.fulfill
+      - services.job.qa.evaluate
+      - services.delivery.package
+
+  - id: digital-products-affiliate
+    priority: P2
+    monetization:
+      - product_sale
+      - subscription_or_community
+      - affiliate_commission
+      - service_upsell
+    business_unit: digital_product_or_offer
+    primary_capabilities:
+      - commerce.digital-product.research
+      - commerce.digital-product.create
+      - commerce.digital-product.publish
+      - commerce.affiliate.offer.select
+      - commerce.funnel.performance.read
+      - commerce.funnel.optimize
+
+shared_agent_roles:
+  - scout
+  - research
+  - strategist
+  - writer
+  - creative
+  - builder
+  - qa
+  - publisher_delivery
+  - analytics
+  - optimizer
+  - sales_account
+
+commercial_metrics:
+  shared:
+    - revenue
+    - contribution_margin
+    - cycle_time
+    - accepted_quantity
+    - revision_rate
+    - capability_attach_rate
+    - expansion_revenue
+  faceless_content:
+    - cost_per_accepted_asset
+    - content_performance
+  ugc_media_buying:
+    - creative_performance
+    - ctr
+    - cpa
+    - roas
+  automation_agency:
+    - setup_margin
+    - recurring_gross_margin
+    - sla_incidents
+  freelance_fulfillment:
+    - proposal_win_rate
+    - on_time_delivery
+    - acceptance_rate
+  digital_products_affiliate:
+    - conversion_rate
+    - refund_rate
+    - revenue_per_content_asset
+
+constraints:
+  provider_adoption_implied: false
+  routing_authority: false
+  production_authority: false
+  live_side_effect_authority: false
+  lifecycle_promotion_implied: false
