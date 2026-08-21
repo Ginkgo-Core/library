@@ -1,0 +1,165 @@
+registry: lead-intelligence-providers
+version: 0.1.0
+runtime_authority: false
+lifecycle_status: FEATURE
+
+principles:
+  - provider_or_tool_existence_does_not_grant_routing_eligibility
+  - software_license_does_not_override_target_source_terms
+  - public_capability_names_remain_provider_agnostic
+  - source_provenance_is_required_for_material_external_data
+  - unknown_terms_or_storage_rights_fail_closed
+  - phone_available_does_not_imply_whatsapp_valid
+  - anti_bot_or_rate_limit_bypass_is_not_authorized
+
+canonical_capability_family:
+  - sales.lead.discover
+  - sales.lead.normalize
+  - sales.lead.enrich
+  - sales.lead.validate
+  - sales.lead.qualify
+  - sales.lead.deduplicate
+  - sales.lead.batch.build
+  - sales.pipeline.record
+  - sales.lead.report.generate
+
+sources:
+  firecrawl-cloud:
+    class: provider_candidate
+    role: [web_search, directory_extraction, website_enrichment, structured_extraction]
+    upstream:
+      repo: firecrawl/firecrawl
+      observed_pin: 071d7eb6fe284919bf4468ee97050da7281cbeb3
+      license: AGPL-3.0
+    adoption:
+      mode: adapter_only
+      vendor_code: false
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - hosted_service_terms_review
+      - data_processing_review
+      - adapter_contract_tests
+      - cost_budget_tests
+      - provenance_tests
+      - governed_read_only_e2e
+    notes:
+      - cloud service and self-hosted core are separate deployment postures
+      - do not infer self-host rights/obligations from cloud availability
+
+  firecrawl-lead-workflow-pattern:
+    class: pattern_source
+    role: [lead_generation_workflow_reference]
+    upstream:
+      repo: firecrawl/firecrawl-workflows
+      observed_pin: 94cc91229d6cedc0613f140d3d013b150bc8e1b0
+      license: ISC
+      relevant_skill: firecrawl-lead-gen
+    adoption:
+      mode: extract_patterns_not_canonical_behavior
+      vendor_code: false
+      routing_eligible: false
+      production_eligible: false
+    notes:
+      - use as workflow/reference input for Ginkgo-native behavior
+      - Ginkgo contracts, policy and evals remain authoritative
+
+  firecrawl-self-hosted:
+    class: provider_deployment_candidate
+    role: [self_hosted_web_context]
+    upstream:
+      repo: firecrawl/firecrawl
+      observed_pin: 071d7eb6fe284919bf4468ee97050da7281cbeb3
+      license: AGPL-3.0
+    adoption:
+      mode: evaluate_only
+      routing_eligible: false
+      production_eligible: false
+    blockers:
+      - agpl_network_use_and_modification_review
+      - operations_cost_review
+      - security_review
+      - deployment_ownership_decision
+
+  ledger-lead-finder:
+    class: observed_external_tool_candidate
+    role: [business_discovery]
+    provenance:
+      source: user_supplied_operational_observation
+      observed_date: 2026-08-21
+      public_repo_or_product_identity: unknown
+    adoption:
+      mode: optional_legacy_adapter_only
+      routing_eligible: false
+      production_eligible: false
+    blockers:
+      - deterministic_interface_unknown
+      - data_source_provenance_unknown
+      - software_or_service_terms_unknown
+      - storage_reuse_rights_unknown
+      - whatsapp_validation_semantics_unverified
+      - reproducible_quality_evidence_missing
+    reject_if:
+      - phone_is_reported_as_whatsapp_without_evidence
+      - source_terms_cannot_be_established
+      - provider_cannot_expose_evidence_lineage
+
+  gosom-google-maps-scraper:
+    class: lab_benchmark_candidate
+    role: [local_business_discovery_benchmark]
+    upstream:
+      repo: gosom/google-maps-scraper
+      observed_pin: 4676350a5bfdf5889e60fbd267794ab768013f02
+      license: MIT
+    adoption:
+      mode: lab_only
+      routing_eligible: false
+      production_eligible: false
+    positive_signals:
+      - self_hosted
+      - cli
+      - rest_api
+      - docker
+      - rich_business_fields
+      - agent_skill_available
+    blockers:
+      - target_source_terms_review
+    notes:
+      - MIT software license only covers the scraper software
+      - it does not grant rights to collect/store target-source content
+
+  google-places-api:
+    class: restricted_source_candidate
+    role: [place_lookup]
+    upstream:
+      product: Google Places API New
+    adoption:
+      mode: source_specific_review_only
+      routing_eligible: false
+      production_eligible: false
+      persistent_lead_database_default: false
+    positive_signals:
+      - place_details_supports_phone_address_rating_and_other_place_fields
+      - official_api
+    blockers:
+      - maps_platform_copying_scraping_storage_terms_review
+      - application_attribution_requirements
+      - retention_policy_review
+    notes:
+      - technical API availability does not equal permission to create a persistent prospecting database
+
+source_policy_required_fields:
+  - source_id
+  - terms_or_license_decision
+  - allowed_purpose
+  - allowed_data_classes
+  - storage_retention_decision
+  - attribution_requirements
+  - rate_cost_policy
+  - evidence_semantics
+  - reviewer
+  - reviewed_at
+
+promotion_doctrine: >
+  UPSTREAM_EXISTS != LICENSE_CLEARED != TARGET_SOURCE_TERMS_CLEARED != ADAPTER_EXISTS
+  != CONTRACT_PASSES != GOVERNED_E2E_PASSES != ROUTING_ELIGIBLE != PRODUCTION_ELIGIBLE
