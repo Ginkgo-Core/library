@@ -1,0 +1,251 @@
+schema_version: ginkgo.repository-portfolio.v1
+status: proposed
+source_of_truth_for:
+  - repository_identity
+  - repository_role
+  - cleanup_action
+  - portfolio_stage
+naming_policy:
+  case: lowercase-kebab
+  redundant_ginkgo_prefix_inside_ginkgo_org: forbidden_for_new_canonical_names
+  prefer_domain_or_product_name: true
+  suffix_only_when_disambiguating: true
+organizations:
+  Ginkgo-Core:
+    role: shared_architecture_and_runtime_authorities
+  Ginkgo-Seeds:
+    role: incubation
+  Ginkgo-Services:
+    role: client_and_bounded_service_delivery
+  LeafCRM:
+    role: leaf_product_family
+  Scale-Characters:
+    role: creator_and_commerce_operations
+repositories:
+  - current: Ginkgo-Core/ai-stack
+    target: Ginkgo-Core/ai-stack
+    stage: CANONICAL
+    action: KEEP
+    domain: architecture_runtime_governance
+  - current: Ginkgo-Core/ginkgo-runtime
+    target: Ginkgo-Core/runtime
+    stage: CANONICAL
+    action: RENAME_AFTER_ARCHITECTURE_MERGE
+    domain: capability_runtime_kernel
+  - current: Ginkgo-Core/ginkgo-agents
+    target: Ginkgo-Core/agents
+    stage: CANONICAL
+    action: RENAME
+    domain: skill_atlas_evals
+  - current: Ginkgo-Core/ginkgo-library
+    target: Ginkgo-Core/library
+    stage: CANONICAL
+    action: RENAME
+    domain: registry_provenance_technology_intelligence
+  - current: Ginkgo-Core/ginkgo-source
+    target: Ginkgo-Core/source
+    stage: ACTIVE
+    action: RENAME_RESCOPE
+    domain: solution_composition_delivery
+  - current: Ginkgo-Core/Sylvia
+    target: ginkgoai/sylvia
+    stage: ACTIVE_PERSONAL
+    action: MOVE_OUT_OF_CORE_VISIBILITY_REVIEW
+    domain: executive_personal_agent
+  - current: Ginkgo-Core/ginkgo-shion
+    target: null
+    stage: SUPERSEDED
+    action: ABSORB_THEN_ARCHIVE
+    absorb_into: ginkgoai/sylvia
+    domain: openclaw_voice_device_ops_legacy
+  - current: Ginkgo-Core/ginkgo-ai-site-main
+    target: Ginkgo-Core/website
+    stage: OWNERSHIP_REVIEW
+    action: RENAME_OR_MOVE
+    domain: corporate_web
+
+  - current: Ginkgo-Seeds/ginkgo-ai-operations
+    target: Ginkgo-Seeds/taskops
+    stage: INCUBATING
+    action: RENAME
+    domain: taskops_control_plane
+  - current: Ginkgo-Seeds/ginkgo-connect
+    target: Ginkgo-Seeds/connect
+    stage: ACTIVE_INCUBATING
+    action: RENAME_THEN_PROMOTION_REVIEW
+    future_target: Ginkgo-Core/connect
+    domain: adapters_connectors
+  - current: Ginkgo-Seeds/ginkgo-tree
+    target: Ginkgo-Seeds/tree
+    stage: ACTIVE_LEGACY_SHARED_KERNEL
+    action: FREEZE_RECONCILE_THEN_RENAME
+    domain: commercial_platform
+  - current: Ginkgo-Seeds/ginkgo-workforce
+    target: Ginkgo-Seeds/workforce
+    stage: ACTIVE_PRODUCT
+    action: RENAME_RESCOPE_SHARED_AUTHORITIES
+    domain: ai_workforce
+  - current: Ginkgo-Seeds/GKOCORE
+    target: null
+    stage: REFERENCE_ONLY
+    action: EXTRACT_THEN_ARCHIVE
+    domain: pre_p0_all_in_one_platform
+  - current: Ginkgo-Seeds/ginkgo-pyre
+    target: Ginkgo-Seeds/pyre
+    stage: ACTIVE_PRODUCT
+    action: RENAME
+    domain: multimodal_creative
+  - current: Ginkgo-Seeds/ginkgo-wave
+    target: Ginkgo-Seeds/wave
+    stage: ACTIVE_PRODUCT
+    action: RENAME
+    domain: ads_growth
+  - current: Ginkgo-Seeds/ginkgo-commerce-os
+    target: Ginkgo-Seeds/commerce-os
+    stage: INCUBATING_PRODUCT
+    action: RENAME
+    domain: ecommerce
+  - current: Ginkgo-Seeds/ginkgo-lexra
+    target: Ginkgo-Seeds/lexra
+    stage: INCUBATING_PRODUCT
+    action: RENAME
+    domain: legal_operations
+  - current: Ginkgo-Seeds/ginkgo-jury
+    target: null
+    stage: SUPERSEDED
+    action: ABSORB_THEN_ARCHIVE
+    absorb_into: Ginkgo-Seeds/lexra
+    domain: legal_monitoring_legacy
+  - current: Ginkgo-Seeds/ginkgo-aegis
+    target: Ginkgo-Seeds/aegis
+    stage: INCUBATING_PRODUCT
+    action: RENAME
+    domain: security_validation
+  - current: Ginkgo-Seeds/ginkgo-piper
+    target: Ginkgo-Seeds/piper
+    stage: INCUBATING_PRODUCT
+    action: RENAME
+    domain: adaptive_learning
+  - current: Ginkgo-Seeds/ginkgo-idol
+    target: Ginkgo-Seeds/personalive
+    stage: INCUBATING_PRODUCT
+    action: RENAME
+    domain: authorized_synthetic_persona_camera
+  - current: Ginkgo-Seeds/ginkgo-imobily
+    target: null
+    stage: SUPERSEDED
+    action: ABSORB_THEN_ARCHIVE
+    absorb_into: LeafCRM/leaf
+    domain: real_estate_ui_legacy
+  - current: Ginkgo-Seeds/ginkgo-bot-factory
+    target: Ginkgo-Seeds/bot-factory
+    stage: REFERENCE_ONLY_INCUBATING
+    action: PARK_RENAME_IF_RESUMED
+    domain: telegram_bot_factory
+
+  - current: Ginkgo-Services/prv-alimentos-connect
+    target: Ginkgo-Services/prv-alimentos
+    stage: CLIENT_DELIVERY
+    action: RENAME_AND_DOCUMENT
+    domain: client_prv
+  - current: Ginkgo-Services/discord_surebet_bot
+    target: Ginkgo-Services/surebet-bot
+    stage: SERVICE
+    action: RENAME
+    domain: surebet_notifications
+  - current: Ginkgo-Services/zavancenografia-site
+    target: Ginkgo-Services/zavan-cenografia
+    stage: CLIENT_DELIVERY
+    action: RENAME
+    domain: client_zavan
+  - current: Ginkgo-Services/ginkgo-identity
+    target: Ginkgo-Seeds/identity
+    stage: INCUBATING_PRODUCT
+    action: MOVE_RENAME
+    domain: identity_verification
+  - current: Ginkgo-Services/ginkgo-mintintelligence
+    target: Ginkgo-Seeds/mint-intelligence
+    stage: ACTIVE_PRODUCT
+    action: MOVE_RENAME
+    domain: nft_intelligence
+  - current: Ginkgo-Services/ginkgo-freelancer-ia
+    target: Ginkgo-Services/freelance-ops
+    stage: ACTIVE_SERVICE_IMPLEMENTATION
+    action: RENAME_ALIGN_REVENUE_OS
+    domain: freelance_fulfillment
+  - current: Ginkgo-Services/ginkgo-property-publisher
+    target: Ginkgo-Services/property-publisher
+    stage: ACTIVE_SERVICE_SLICE
+    action: RENAME
+    domain: property_publishing
+  - current: Ginkgo-Services/ginkgo-digital-exchange
+    target: Ginkgo-Seeds/digital-exchange
+    stage: INCUBATING_PRODUCT
+    action: MOVE_RENAME_RECONCILE
+    domain: digital_deal_distribution
+
+  - current: LeafCRM/leaf
+    target: LeafCRM/leaf
+    stage: CANONICAL
+    action: KEEP
+    domain: crm_real_estate
+  - current: LeafCRM/site
+    target: LeafCRM/website
+    stage: LEGACY_UNKNOWN
+    action: EXTRACT_DECIDE
+    domain: leaf_web
+  - current: LeafCRM/leaf_saas
+    target: null
+    stage: SUPERSEDED
+    action: EXTRACT_THEN_ARCHIVE
+    domain: leaf_legacy_saas
+  - current: LeafCRM/ginkgo-platform
+    target: null
+    stage: SUPERSEDED
+    action: EXTRACT_THEN_ARCHIVE
+    domain: leaf_legacy_platform
+  - current: LeafCRM/ginkgo-leaf-systems
+    target: null
+    stage: DELETE_CANDIDATE
+    action: VERIFY_THEN_ARCHIVE_OR_DELETE
+    domain: lovable_legacy
+  - current: LeafCRM/ginkgo-leaf-fa7275f3
+    target: null
+    stage: DELETE_CANDIDATE
+    action: VERIFY_THEN_ARCHIVE_OR_DELETE
+    domain: lovable_generated_legacy
+
+  - current: Scale-Characters/amazon-ops
+    target: Scale-Characters/amazon-ops
+    stage: ACTIVE
+    action: KEEP
+    domain: marketplace_operations_evidence
+  - current: Scale-Characters/vip-gabi
+    target: Scale-Characters/vip-gabi
+    stage: ACTIVE
+    action: KEEP
+    domain: creator_operation
+  - current: Scale-Characters/Scale-Group
+    target: Scale-Characters/creator-ops
+    stage: ACTIVE_FOUNDATION
+    action: RENAME
+    domain: creator_operations
+cleanup_gates:
+  before_archive:
+    - unique_commits_extracted
+    - unique_assets_extracted
+    - open_prs_and_issues_reviewed
+    - dependency_refs_checked
+    - provenance_preserved
+  before_delete:
+    - all_before_archive_gates
+    - zero_required_history
+    - zero_required_evidence
+    - zero_live_dependency
+    - explicit_owner_confirmation
+  before_move_or_rename:
+    - reference_inventory
+    - write_freeze
+    - open_pr_review
+    - dependency_update_plan
+    - post_move_ci_verification
