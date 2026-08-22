@@ -1,5 +1,5 @@
-version: 3
-updated_at: 2026-08-18
+version: 4
+updated_at: 2026-08-22
 
 default:
   fallback_policy: none
@@ -69,6 +69,82 @@ fallbacks:
     fallback_policy: none
     audit_status: p0_safe
 
+  - capability: finance.instrument.resolve
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.market.snapshot
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.market.technical.analyze
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.company.fundamentals.read
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.company.fundamentals.analyze
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.news.collect
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.news.analyze
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.sentiment.collect
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.sentiment.analyze
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.macro.read
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.market.expectations.read
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.research.debate
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.research.synthesize
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.trade.propose
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.risk.evaluate
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.portfolio.review
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.backtest.simulate
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.performance.evaluate
+    fallback_policy: none
+    audit_status: p0_safe
+
+  - capability: finance.decision.reflect
+    fallback_policy: none
+    audit_status: p0_safe
+
 rules:
   - fallback_policy defaults to none for every capability unless an explicit same_semantics_only policy is reviewed and registered.
   - same_semantics_only must preserve domain, capability semantics, output contract, permission class, read/write behavior, data classification and lifecycle eligibility.
@@ -78,5 +154,7 @@ rules:
   - Never route FEATURE or another non-production lifecycle state as a production fallback.
   - Never change semantic behavior through fallback.
   - Never change privacy or cost class through fallback without an explicit policy that permits and constrains that change.
+  - Never use provider fallback to bypass finance temporal-integrity or data-freshness requirements.
+  - Never fallback from finance READ/ANALYZE/SIMULATE into TRANSACTION.
   - Discovery order or candidate lists are metadata only and do not authorize automatic fallback.
   - A missing safe route returns a normalized blocked/error result rather than an implicit substitute.
