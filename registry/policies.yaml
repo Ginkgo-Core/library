@@ -1,5 +1,5 @@
-version: 3
-updated_at: 2026-08-19
+version: 4
+updated_at: 2026-08-22
 
 policies:
   - id: provider-selection-default
@@ -171,3 +171,56 @@ policies:
       - Product identity/matching evidence and compliance gates are evaluated before economics where applicable.
       - APPROVED never authorizes listing creation, publication, purchase, price mutation, inventory mutation or fulfillment.
       - Changes to these thresholds require a governed policy change with evidence and review.
+
+  - id: finance-intelligence-safety-v1
+    policy_class: capability_policy
+    purpose: Constrain the Finance Intelligence domain to evidence-backed READ, ANALYZE and SIMULATE behavior with zero transaction authority.
+    applies_to:
+      capability_prefix: finance.
+      allowed_action_classes: [READ, ANALYZE, SIMULATE]
+      denied_action_classes: [TRANSACTION]
+    default_requirement:
+      approval_required: false
+    rules:
+      - A signal, rating, trade proposal, risk review, portfolio review, reflection or backtest is advisory analysis and grants no broker authority.
+      - finance.trade.propose must return execution_allowed=false in this lifecycle phase.
+      - No LLM, agent, workflow or caller may submit, cancel, replace or close a live financial position through this policy.
+      - Financial evidence must record source and temporal provenance sufficient to determine when the information became knowable.
+      - Historical analysis must exclude evidence whose available_at is later than simulation_time.
+      - Stale or temporally ambiguous market data must be flagged rather than silently treated as current.
+      - Numeric risk limits and transaction enablement state are deterministic policy inputs, never LLM discretion.
+      - Model/provider/version and cost metadata must be preserved when an LLM materially contributes to an operational artifact.
+      - Backtest performance is evaluation evidence and never proof of future profitability.
+      - FEATURE implementations remain non-routable regardless of upstream popularity or benchmark claims.
+
+  - id: finance-temporal-integrity-v1
+    policy_class: evidence_policy
+    purpose: Prevent look-ahead leakage and time-travel evidence in historical finance analysis and simulation.
+    applies_to:
+      capabilities: [finance.market.snapshot, finance.company.fundamentals.read, finance.news.collect, finance.sentiment.collect, finance.macro.read, finance.market.expectations.read, finance.backtest.simulate, finance.performance.evaluate]
+    required_temporal_fields_where_applicable: [event_time, available_at, observed_at, ingested_at]
+    rules:
+      - available_at is the earliest time evidence was legitimately knowable to the strategy.
+      - Historical simulation may consume evidence only when available_at <= simulation_time.
+      - Revised macro/fundamental values must preserve release/version provenance where available.
+      - Missing available_at on time-sensitive evidence is a validation warning and may be a hard error for benchmark-grade simulations.
+      - Data-source fallbacks must not bypass temporal-integrity checks.
+
+  - id: finance-transaction-freeze-v1
+    policy_class: capability_policy
+    purpose: Reserve but deny the future financial transaction namespace until a separate transaction architecture is reviewed and validated.
+    applies_to:
+      reserved_capabilities: [finance.order.submit, finance.order.cancel, finance.position.close, finance.funds.transfer]
+    action_class: TRANSACTION
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+    production_eligible: false
+    live_execution: blocked
+    approval_required: true
+    rules:
+      - No transaction capability is registered as routable in the current Finance Intelligence phase.
+      - Human Approval is necessary where a future transaction policy requires it but is not sufficient to create a missing eligible binding.
+      - A future transaction implementation requires a dedicated ADR, broker adapter, account/identity binding, deterministic risk engine, idempotency, reconciliation, partial-fill handling, kill switch and immutable Evidence.
+      - Paper trading must precede any bounded live canary.
+      - No secrets, brokerage credentials, exchange keys or custody credentials belong in Git.
+      - Finance Intelligence outputs may feed a future transaction-policy evaluation but may never bypass it.
