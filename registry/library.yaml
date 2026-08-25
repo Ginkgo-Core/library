@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-08-17
+updated_at: 2026-08-24
 schema: ../LIBRARY_SCHEMA.md
 
 items:
@@ -34,6 +34,47 @@ items:
       - hosted
     record: 40-media/video/higgsfield.md
     source_verified_at: 2026-08-17
+
+  - id: scrapegraph-ai
+    name: ScrapeGraphAI
+    category: data.scraping-ingestion
+    status: curated
+    maturity: production-candidate
+    priority: high
+    open_source: true
+    self_hostable: true
+    canonical_owner: ai-stack
+    ginkgo_products:
+      - ai-stack
+      - ginkgo-agents
+      - ginkgo-source
+      - ginkgo-commerce-os
+      - leaf
+      - scale-group
+    capabilities:
+      - data.web.extract-structured
+      - data.web.search-extract
+      - data.web.multi-source-extract
+      - data.web.script-generate
+      - data.document.extract
+      - agents.web-research.enable
+    integration_surfaces:
+      - api
+      - mcp
+      - sdk
+      - n8n
+    tags:
+      - scraping
+      - web-intelligence
+      - llm
+      - graph
+      - playwright
+      - open-source
+      - self-hostable
+      - ollama
+      - mcp
+    record: 50-data-knowledge/scraping/scrapegraph-ai.md
+    source_verified_at: 2026-08-24
 
 # Canonical machine-readable registry.
 # Add one compact entry per curated technology/pattern.
