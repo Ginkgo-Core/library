@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-08-17
+updated_at: 2026-08-29
 schema: ../LIBRARY_SCHEMA.md
 
 items:
@@ -34,6 +34,109 @@ items:
       - hosted
     record: 40-media/video/higgsfield.md
     source_verified_at: 2026-08-17
+
+  - id: comfyui
+    name: ComfyUI
+    category: media.video
+    status: promoted
+    maturity: production-candidate
+    priority: critical
+    open_source: true
+    self_hostable: true
+    canonical_owner: ai-stack
+    ginkgo_products:
+      - ai-stack
+      - ginkgo-pyre
+      - sylvia
+    capabilities:
+      - media.image.generate
+      - media.image.transform
+      - media.video.generate
+      - media.workflow.execute
+      - media.model.local.execute
+      - media.control.condition
+      - media.avatar.generate
+    integration_surfaces:
+      - api
+      - cli
+      - docker
+    tags:
+      - image
+      - video
+      - gpu
+      - workflow
+      - local
+      - self-hosted
+    record: 40-media/video/comfyui.md
+    source_verified_at: 2026-08-29
+
+  - id: heliosgen
+    name: HeliosGen
+    category: media.video
+    status: curated
+    maturity: experimental
+    priority: high
+    open_source: true
+    self_hostable: true
+    canonical_owner: ai-stack
+    ginkgo_products:
+      - ai-stack
+      - ginkgo-pyre
+      - sylvia
+    capabilities:
+      - media.image.generate
+      - media.image.reference
+      - media.video.generate
+      - media.video.animate
+      - media.workflow.execute
+      - media.workflow.share
+    integration_surfaces:
+      - api
+      - webhook
+    tags:
+      - image
+      - video
+      - workflow
+      - multimodel
+      - self-hosted
+      - kie-ai
+    record: 40-media/video/heliosgen.md
+    source_verified_at: 2026-08-29
+
+  - id: donkey-cut
+    name: Donkey Cut
+    category: media.video
+    status: curated
+    maturity: experimental
+    priority: high
+    open_source: true
+    self_hostable: true
+    canonical_owner: ai-stack
+    ginkgo_products:
+      - ai-stack
+      - ginkgo-pyre
+      - sylvia
+    capabilities:
+      - media.timeline.edit
+      - media.clip.trim
+      - media.clip.reframe
+      - media.caption.edit
+      - media.audio.edit
+      - media.transition.apply
+      - media.color.grade
+      - media.render.export
+    integration_surfaces:
+      - api
+      - mcp
+    tags:
+      - video
+      - editor
+      - timeline
+      - agentic
+      - mcp
+      - ffmpeg
+    record: 40-media/video/donkey-cut.md
+    source_verified_at: 2026-08-29
 
 # Canonical machine-readable registry.
 # Add one compact entry per curated technology/pattern.
