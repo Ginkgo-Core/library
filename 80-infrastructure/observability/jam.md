@@ -31,7 +31,7 @@ capabilities:
   - software.debug.context.collect
   - software.issue.route
   - agents.debug.context
- tags: [bug-reporting, screen-recording, console-logs, network-logs, qa, linear, github, agent-context]
+tags: [bug-reporting, screen-recording, console-logs, network-logs, qa, linear, github, agent-context]
 canonical_owner: ginkgo-source
 ginkgo_products:
   - ginkgo-ops
