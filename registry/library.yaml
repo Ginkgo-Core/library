@@ -1,8 +1,102 @@
 version: 1
-updated_at: 2026-08-17
+updated_at: 2026-09-03
 schema: ../LIBRARY_SCHEMA.md
 
 items:
+  - id: factory
+    name: Factory
+    category: agents.coding
+    status: curated
+    maturity: production-candidate
+    priority: critical
+    open_source: false
+    self_hostable: partial
+    canonical_owner: ginkgo-agents
+    ginkgo_products:
+      - ginkgo-source
+      - ginkgo-agents
+      - ginkgo-library
+    capabilities:
+      - agents.code.execute
+      - agents.code.review
+      - agents.workflow.run
+      - agents.background.execute
+      - software.qa.automate
+    integration_surfaces:
+      - api
+      - mcp
+      - cli
+      - sdk
+    tags:
+      - coding-agent
+      - sdlc
+      - agent-native
+    record: 10-agents/coding/factory.md
+    source_verified_at: 2026-09-03
+
+  - id: manus
+    name: Manus
+    category: agents.runtimes
+    status: curated
+    maturity: production-candidate
+    priority: high
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-agents
+    ginkgo_products:
+      - ginkgo-agents
+      - ginkgo-runtime
+      - ginkgo-ops
+      - ginkgo-library
+    capabilities:
+      - agents.task.execute
+      - agents.workflow.execute
+      - agents.custom.configure
+      - agents.messaging.interact
+      - automation.webhooks.emit
+    integration_surfaces:
+      - api
+      - webhook
+    tags:
+      - autonomous-agent
+      - telegram
+      - whatsapp
+      - skills
+    record: 10-agents/runtimes/manus.md
+    source_verified_at: 2026-09-03
+
+  - id: elevenlabs
+    name: ElevenLabs
+    category: media.audio-voice
+    status: curated
+    maturity: production-proven
+    priority: critical
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-pyre
+    ginkgo_products:
+      - ginkgo-pyre
+      - ginkgo-ops
+      - ginkgo-runtime
+      - ginkgo-library
+    capabilities:
+      - media.voice.synthesize
+      - media.voice.clone
+      - media.voice.convert
+      - media.speech.transcribe
+      - media.audio.stream
+    integration_surfaces:
+      - api
+      - mcp
+      - sdk
+    tags:
+      - tts
+      - stt
+      - voice-cloning
+      - realtime
+    record: 40-media/audio-voice/elevenlabs.md
+    source_verified_at: 2026-09-03
+
   - id: higgsfield
     name: Higgsfield
     category: media.video
@@ -34,6 +128,188 @@ items:
       - hosted
     record: 40-media/video/higgsfield.md
     source_verified_at: 2026-08-17
+
+  - id: granola
+    name: Granola
+    category: data.document-processing
+    status: curated
+    maturity: production-proven
+    priority: high
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-connect
+    ginkgo_products:
+      - ginkgo-ops
+      - ginkgo-connect
+      - ginkgo-library
+    capabilities:
+      - meetings.notes.capture
+      - meetings.actions.extract
+      - data.context.expose
+      - agents.meeting-context.retrieve
+      - sales.discovery.capture
+    integration_surfaces:
+      - mcp
+    tags:
+      - meetings
+      - crm
+      - sales
+      - product-discovery
+    record: 50-data-knowledge/document-processing/granola.md
+    source_verified_at: 2026-09-03
+
+  - id: mobbin
+    name: Mobbin
+    category: design.ux-review
+    status: curated
+    maturity: production-proven
+    priority: high
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-library
+    ginkgo_products:
+      - ginkgo-source
+      - ginkgo-ops
+      - ginkgo-library
+    capabilities:
+      - design.pattern.search
+      - design.ux.reference
+      - design.flow.reference
+      - agents.design.context
+    integration_surfaces:
+      - mcp
+    tags:
+      - design-reference
+      - ux
+      - product-research
+      - agent-context
+    record: 70-design/ux-review/mobbin.md
+    source_verified_at: 2026-09-03
+
+  - id: magic-patterns
+    name: Magic Patterns
+    category: design.prototyping
+    status: curated
+    maturity: production-candidate
+    priority: high
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-source
+    ginkgo_products:
+      - ginkgo-ops
+      - ginkgo-source
+      - ginkgo-library
+    capabilities:
+      - design.prototype.generate
+      - design.flow.prototype
+      - design.system.import
+      - design.code.export
+      - design.figma.export
+    integration_surfaces:
+      - mcp
+    tags:
+      - prototyping
+      - design-system
+      - figma
+      - github
+    record: 70-design/prototyping/magic-patterns.md
+    source_verified_at: 2026-09-03
+
+  - id: jam
+    name: Jam
+    category: infra.observability
+    status: curated
+    maturity: production-proven
+    priority: high
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-source
+    ginkgo_products:
+      - ginkgo-ops
+      - ginkgo-source
+      - ginkgo-library
+    capabilities:
+      - software.bug.capture
+      - infra.client-observability.capture
+      - software.reproduction.generate
+      - software.debug.context.collect
+      - software.issue.route
+    integration_surfaces:
+      - cli
+      - sdk
+    tags:
+      - bug-reporting
+      - qa
+      - linear
+      - github
+      - agent-context
+    record: 80-infrastructure/observability/jam.md
+    source_verified_at: 2026-09-03
+
+  - id: linear
+    name: Linear
+    category: business.workforce
+    status: curated
+    maturity: production-proven
+    priority: critical
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-connect
+    ginkgo_products:
+      - ginkgo-ops
+      - ginkgo-source
+      - ginkgo-agents
+      - ginkgo-library
+    capabilities:
+      - work.issue.manage
+      - work.project.manage
+      - work.cycle.manage
+      - agents.work.assign
+      - product.execution.track
+    integration_surfaces:
+      - api
+      - mcp
+      - sdk
+      - webhook
+    tags:
+      - issues
+      - projects
+      - product-management
+      - agents
+    record: 90-business-use-cases/workforce/linear.md
+    source_verified_at: 2026-09-03
+
+  - id: gamma
+    name: Gamma
+    category: business.marketing
+    status: curated
+    maturity: production-proven
+    priority: high
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-pyre
+    ginkgo_products:
+      - ginkgo-pyre
+      - ginkgo-ops
+      - ginkgo-wave
+      - ginkgo-library
+    capabilities:
+      - content.presentation.generate
+      - content.document.generate
+      - content.social.generate
+      - content.website.generate
+      - content.brand.apply
+    integration_surfaces:
+      - api
+      - mcp
+    tags:
+      - presentations
+      - documents
+      - proposals
+      - n8n
+      - branding
+    record: 90-business-use-cases/marketing/gamma.md
+    source_verified_at: 2026-09-03
 
 # Canonical machine-readable registry.
 # Add one compact entry per curated technology/pattern.
