@@ -10,7 +10,7 @@ items:
     maturity: production-candidate
     priority: critical
     open_source: false
-    self_hostable: partial
+    self_hostable: false
     canonical_owner: ginkgo-agents
     ginkgo_products:
       - ginkgo-source
