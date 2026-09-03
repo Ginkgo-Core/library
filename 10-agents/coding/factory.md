@@ -15,7 +15,7 @@ website_url: https://factory.ai
 docs_url: https://docs.factory.ai
 license: proprietary
 open_source: false
-self_hostable: partial
+self_hostable: false
 commercial_service: true
 integration_surfaces:
   api: true
