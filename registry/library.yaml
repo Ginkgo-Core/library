@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-09-03
+updated_at: 2026-09-04
 schema: ../LIBRARY_SCHEMA.md
 
 items:
@@ -310,6 +310,47 @@ items:
       - branding
     record: 90-business-use-cases/marketing/gamma.md
     source_verified_at: 2026-09-03
+
+  - id: darkplanner
+    name: DarkPlanner
+    category: business.creator-economy
+    status: curated
+    maturity: production-candidate
+    priority: high
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-library
+    ginkgo_products:
+      - ginkgo-pyre
+      - ginkgo-ops
+      - ginkgo-runtime
+      - ginkgo-connect
+      - ginkgo-library
+    capabilities:
+      - business.creator-operations.manage
+      - content.pipeline.manage
+      - content.niche.research
+      - content.reference.capture
+      - automation.browser.control
+      - automation.jobs.queue
+      - media.audio.generate
+      - media.subtitle.generate
+      - media.video.batch-generate
+      - youtube.channel.research
+    integration_surfaces:
+      - browser-extension
+      - local-companion
+    tags:
+      - creatorops
+      - creator-economy
+      - youtube
+      - faceless
+      - browser-extension
+      - local-bridge
+      - content-intelligence
+      - reference-only
+    record: 90-business-use-cases/creator-economy/darkplanner.md
+    source_verified_at: 2026-09-04
 
 # Canonical machine-readable registry.
 # Add one compact entry per curated technology/pattern.
