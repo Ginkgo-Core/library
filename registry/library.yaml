@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-09-04
+updated_at: 2026-09-05
 schema: ../LIBRARY_SCHEMA.md
 
 items:
@@ -351,6 +351,46 @@ items:
       - reference-only
     record: 90-business-use-cases/creator-economy/darkplanner.md
     source_verified_at: 2026-09-04
+
+  - id: odoo
+    name: Odoo
+    category: app.erp
+    status: validated
+    maturity: production-proven
+    priority: critical
+    open_source: partial
+    self_hostable: true
+    canonical_owner: ginkgo-connect
+    ginkgo_products:
+      - ginkgo-runtime
+      - ginkgo-ops
+      - ginkgo-connect
+      - ginkgo-library
+    capabilities:
+      - app.erp.system-of-record
+      - app.crm
+      - app.sales
+      - app.accounting
+      - app.inventory
+      - app.purchase
+      - app.manufacturing
+      - project.task-management
+      - integration.json2
+      - agents.contextual-ai
+      - fiscal.brazil
+    integration_surfaces:
+      - api
+      - webhook
+    tags:
+      - erp
+      - odoo19
+      - json2
+      - brazil
+      - system-of-record
+      - provider
+      - ai-agents
+    record: 60-app-platform/erp/odoo.md
+    source_verified_at: 2026-09-05
 
 # Canonical machine-readable registry.
 # Add one compact entry per curated technology/pattern.
