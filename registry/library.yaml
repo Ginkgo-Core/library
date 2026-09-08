@@ -1,5 +1,5 @@
 version: 1
-updated_at: 2026-09-05
+updated_at: 2026-09-08
 schema: ../LIBRARY_SCHEMA.md
 
 items:
@@ -391,6 +391,50 @@ items:
       - ai-agents
     record: 60-app-platform/erp/odoo.md
     source_verified_at: 2026-09-05
+
+  - id: salesforce
+    name: Salesforce
+    category: app.crm
+    status: validated
+    maturity: production-proven
+    priority: critical
+    open_source: false
+    self_hostable: false
+    canonical_owner: ginkgo-connect
+    ginkgo_products:
+      - ginkgo-runtime
+      - ginkgo-ops
+      - ginkgo-connect
+      - ginkgo-library
+    capabilities:
+      - app.crm.system-of-record
+      - app.crm.accounts
+      - app.crm.contacts
+      - app.crm.leads
+      - app.crm.opportunities
+      - app.sales.pipeline
+      - app.sales.forecast
+      - app.service.cases
+      - app.customer-data
+      - agents.agentforce
+      - integration.rest-api
+      - integration.events
+    integration_surfaces:
+      - api
+      - webhook
+      - cli
+      - sdk
+    tags:
+      - salesforce
+      - crm
+      - enterprise
+      - customer-360
+      - data-360
+      - agentforce
+      - system-of-record
+      - provider
+    record: 60-app-platform/crm/salesforce.md
+    source_verified_at: 2026-09-08
 
 # Canonical machine-readable registry.
 # Add one compact entry per curated technology/pattern.
