@@ -1,5 +1,5 @@
-version: 4
-updated_at: 2026-08-19
+version: 5
+updated_at: 2026-08-22
 
 # Capability = provider-agnostic public semantic contract.
 # Skill/binding = internal implementation possibility declared for Domain Router discovery.
@@ -176,6 +176,143 @@ capabilities:
       - An APPROVED economic evaluation never authorizes publication, purchase or other side effects.
       - Economic thresholds are policy-owned and cannot be overridden by callers.
 
+  # Finance Intelligence P0 — READ / ANALYZE / SIMULATE only.
+  - id: finance.instrument.resolve
+    purpose: Resolve an instrument identifier to a deterministic canonical identity before analysis.
+    action_class: READ
+    output_contract: finance-instrument-identity.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.market.snapshot
+    purpose: Read a point-in-time market snapshot with provenance and freshness metadata.
+    action_class: READ
+    output_contract: finance-market-snapshot.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.market.technical.analyze
+    purpose: Analyze normalized market data and technical indicators without transaction authority.
+    action_class: ANALYZE
+    output_contract: finance-technical-analysis.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.company.fundamentals.read
+    purpose: Read point-in-time company fundamentals and financial statements with source provenance.
+    action_class: READ
+    output_contract: finance-fundamentals-snapshot.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.company.fundamentals.analyze
+    purpose: Analyze normalized fundamentals for strengths, weaknesses, valuation signals and material risks.
+    action_class: ANALYZE
+    output_contract: finance-fundamentals-analysis.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.news.collect
+    purpose: Collect instrument and macro news within an explicit point-in-time window.
+    action_class: READ
+    output_contract: finance-news-pack.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.news.analyze
+    purpose: Analyze collected news for catalysts, risks and uncertainty with evidence links.
+    action_class: ANALYZE
+    output_contract: finance-news-analysis.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.sentiment.collect
+    purpose: Collect authorized public sentiment observations without inventing social evidence.
+    action_class: READ
+    output_contract: finance-sentiment-pack.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.sentiment.analyze
+    purpose: Analyze sourced sentiment observations and report confidence, sample quality and manipulation risk.
+    action_class: ANALYZE
+    output_contract: finance-sentiment-analysis.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.macro.read
+    purpose: Read macroeconomic observations with release-time provenance.
+    action_class: READ
+    output_contract: finance-macro-snapshot.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.market.expectations.read
+    purpose: Read authorized market-expectation or prediction-market observations as contextual evidence.
+    action_class: READ
+    output_contract: finance-market-expectations.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.research.debate
+    purpose: Produce explicit bullish and bearish challenges against a shared evidence set.
+    action_class: ANALYZE
+    output_contract: finance-research-debate.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.research.synthesize
+    purpose: Synthesize specialist evidence and adversarial research into a bounded investment thesis.
+    action_class: ANALYZE
+    output_contract: finance-research-synthesis.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.trade.propose
+    purpose: Produce an advisory trade proposal with execution_allowed=false and no broker side effects.
+    action_class: ANALYZE
+    output_contract: finance-trade-proposal.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+    rules:
+      - A proposal is analysis, not transaction authorization.
+      - execution_allowed must remain false in this lifecycle phase.
+
+  - id: finance.risk.evaluate
+    purpose: Evaluate a trade proposal from aggressive, neutral and conservative risk perspectives.
+    action_class: ANALYZE
+    output_contract: finance-risk-review.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.portfolio.review
+    purpose: Review an advisory proposal against portfolio context and deterministic risk constraints.
+    action_class: ANALYZE
+    output_contract: finance-portfolio-review.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.backtest.simulate
+    purpose: Simulate a strategy against point-in-time-safe historical evidence including costs and benchmark comparison.
+    action_class: SIMULATE
+    output_contract: finance-backtest-result.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.performance.evaluate
+    purpose: Evaluate realized outcomes, forecast error, benchmark-relative performance and decision cost.
+    action_class: ANALYZE
+    output_contract: finance-performance-evaluation.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
+  - id: finance.decision.reflect
+    purpose: Generate a source-backed reflection from a prior decision and its realized outcome for future context.
+    action_class: ANALYZE
+    output_contract: finance-decision-reflection.v1
+    lifecycle_ceiling: FEATURE
+    routing_eligible: false
+
 routing_principles:
   - "Canonical runtime path: Caller -> CapabilityRequest -> Capability Bus -> Domain Router -> skill/version -> adapter -> provider -> CapabilityResult."
   - "Library declares what exists, what is discoverable and applicable constraints; it does not perform runtime routing."
@@ -187,3 +324,4 @@ routing_principles:
   - "Do not infer API entitlement from a consumer subscription."
   - "A web-only product must remain marked human-assisted until a real autonomous integration exists."
   - "Marketplace selection is a routing constraint; never silently cross marketplaces."
+  - "Finance Intelligence currently permits READ, ANALYZE and SIMULATE only; TRANSACTION is a separately governed future domain and fails closed."
