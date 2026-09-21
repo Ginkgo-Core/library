@@ -1,5 +1,5 @@
-version: 4
-updated_at: 2026-08-19
+version: 5
+updated_at: 2026-08-24
 
 # Capability = provider-agnostic public semantic contract.
 # Skill/binding = internal implementation possibility declared for Domain Router discovery.
@@ -49,6 +49,8 @@ capabilities:
     purpose: Retrieve semantic context from supported operational knowledge stores.
     output_contract: ranked-context
 
+  # Legacy creative capability surface. Retained temporarily for compatibility while
+  # media.* becomes canonical. Do not add new implementations against these IDs.
   - id: creative.image.local
     purpose: Reproducible local image generation and controlled workflows.
     preferred_skills: [media.image.generate.local]
@@ -71,6 +73,108 @@ capabilities:
   - id: creative.music
     purpose: Background music, sonic identity and campaign audio.
     output_contract: audio-asset
+
+  # Media Runtime v1 canonical surface. Provider/model/locality are resolved internally.
+  - id: media.image.generate
+    purpose: Generate an image under semantic, policy, privacy, quality, latency and cost constraints without caller-selected implementation.
+    preferred_skills: [media.image.generate]
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.image.edit
+    purpose: Transform an existing image while preserving normalized asset lineage and request semantics.
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.image.layers
+    purpose: Decompose or generate image layers for downstream controlled composition.
+    output_contract: layered-creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.image.upscale
+    purpose: Produce a higher-resolution derivative of an image with explicit lineage.
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.image.remove-background
+    purpose: Produce a background-removed derivative of an image with explicit lineage.
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.video.generate
+    purpose: Generate video using an internally selected eligible implementation while preserving caller-independent routing.
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.video.animate
+    purpose: Animate a supplied image or asset reference into a video derivative.
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.video.transform
+    purpose: Transform a supplied video while preserving normalized source lineage.
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.video.extend
+    purpose: Extend an existing video through a semantics-preserving media operation.
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.audio.generate
+    purpose: Generate an audio asset through the governed media runtime.
+    output_contract: audio-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.audio.speech
+    purpose: Generate speech audio from normalized text/voice constraints.
+    output_contract: audio-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.audio.music
+    purpose: Generate music or sonic identity assets through the governed media runtime.
+    output_contract: audio-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.lipsync.generate
+    purpose: Generate a lip-synchronized media derivative from governed source asset references.
+    output_contract: creative-asset
+    lifecycle_ceiling: FEATURE
+
+  - id: media.asset.ingest
+    purpose: Register an uploaded or imported media object as a governed asset reference with provenance.
+    output_contract: media-asset-reference
+    lifecycle_ceiling: FEATURE
+
+  - id: media.asset.inspect
+    purpose: Read normalized media metadata and lineage without exposing provider secrets or routing authority.
+    output_contract: media-asset-metadata
+    lifecycle_ceiling: FEATURE
+
+  - id: creative.plan.generate
+    purpose: Convert a creative brief into a provider-neutral DAG of deliverables expressed only as capabilities and dependencies.
+    output_contract: creative-plan
+    lifecycle_ceiling: FEATURE
+
+  - id: creative.plan.execute
+    purpose: Execute an approved creative plan through ordinary CapabilityRequest boundaries and emit normalized creative events/assets.
+    output_contract: creative-job-result
+    lifecycle_ceiling: FEATURE
+
+  - id: workflow.media.create
+    purpose: Create a declarative media workflow graph whose domain operations resolve through the Capability Bus.
+    output_contract: media-workflow
+    lifecycle_ceiling: FEATURE
+
+  - id: workflow.media.execute
+    purpose: Execute a media workflow through an authorized workflow executor while preserving capability boundaries.
+    output_contract: media-workflow-run
+    lifecycle_ceiling: FEATURE
+
+  - id: workflow.media.node.execute
+    purpose: Execute one authorized media workflow node through the same semantic capability boundary used by full workflow runs.
+    output_contract: media-workflow-node-result
+    lifecycle_ceiling: FEATURE
 
   - id: dev.prototype-ai
     purpose: Prompt, model, structured-output and tool-calling prototyping.
@@ -187,3 +291,4 @@ routing_principles:
   - "Do not infer API entitlement from a consumer subscription."
   - "A web-only product must remain marked human-assisted until a real autonomous integration exists."
   - "Marketplace selection is a routing constraint; never silently cross marketplaces."
+  - "Media provider/model/locality selection is internal runtime policy; never caller routing authority."
