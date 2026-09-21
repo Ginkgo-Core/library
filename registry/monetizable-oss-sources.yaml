@@ -1,0 +1,291 @@
+version: 1
+registry_kind: external_source_atlas
+runtime_authority: false
+routing_eligible: false
+production_eligible: false
+research_date: 2026-08-20
+tracking_issue: Ginkgo-Core/ginkgo-library#5
+
+invariants:
+  upstream_exists_is_not_validation: true
+  library_is_not_runtime_router: true
+  public_capabilities_provider_agnostic: true
+  automatic_lifecycle_promotion: false
+
+sources:
+  - id: n8n
+    upstream: https://github.com/n8n-io/n8n
+    priority: P0
+    source_role: executor
+    adoption_mode: executor_candidate
+    license_family: sustainable_use_fair_code
+    commercial_use_posture: conditional
+    redistribution_posture: restricted_review_required
+    multi_tenant_posture: commercial_review_required
+    branding_obligations: review_required
+    model_dataset_asset_license_gate: not_primary
+    ginkgo_boundary: taskops_executor_router
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: langflow
+    upstream: https://github.com/langflow-ai/langflow
+    priority: P0
+    source_role: adapter_runtime_candidate
+    adoption_mode: adapter_candidate
+    license_family: MIT
+    commercial_use_posture: permissive_subject_to_dependencies
+    redistribution_posture: preserve_license_notices
+    multi_tenant_posture: dependency_and_product_terms_review
+    branding_obligations: standard_license_notice
+    model_dataset_asset_license_gate: required_for_bundled_assets
+    ginkgo_boundary: governed_adapter_behind_semantic_capabilities
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: comfyui
+    upstream: https://github.com/Comfy-Org/ComfyUI
+    priority: P0
+    source_role: media_runtime_candidate
+    adoption_mode: provider_runtime_candidate
+    license_family: GPL-3.0
+    commercial_use_posture: conditional_on_gpl_and_components
+    redistribution_posture: copyleft_review_required
+    multi_tenant_posture: architecture_and_license_review
+    branding_obligations: license_notice_and_component_review
+    model_dataset_asset_license_gate: required
+    ginkgo_boundary: creative_pyre_runtime_adapter
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: moneyprinterturbo
+    upstream: https://github.com/harry0703/MoneyPrinterTurbo
+    priority: P0
+    source_role: pattern_source
+    adoption_mode: pattern_source
+    license_family: MIT
+    commercial_use_posture: permissive_subject_to_dependencies_and_assets
+    redistribution_posture: preserve_license_notices
+    multi_tenant_posture: not_assumed
+    branding_obligations: standard_license_notice
+    model_dataset_asset_license_gate: required
+    ginkgo_boundary: vertical_content_capability_patterns
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: business_leads_ai_automation
+    upstream: https://github.com/asiifdev/business-leads-ai-automation
+    priority: P0
+    source_role: pattern_source
+    adoption_mode: pattern_source
+    license_family: MIT
+    commercial_use_posture: code_permissive_platform_terms_separate
+    redistribution_posture: preserve_license_notices
+    multi_tenant_posture: not_assumed
+    branding_obligations: standard_license_notice
+    model_dataset_asset_license_gate: not_primary
+    ginkgo_boundary: revenue_agent_patterns
+    external_policy_gates:
+      - data_source_terms
+      - privacy_lawful_use
+      - consent_when_applicable
+      - suppression_opt_out
+      - channel_terms
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: browser_use
+    upstream: https://github.com/browser-use/browser-use
+    priority: P1
+    source_role: adapter_provider_candidate
+    adoption_mode: adapter_candidate
+    license_family: MIT
+    commercial_use_posture: permissive_subject_to_dependencies_and_platform_terms
+    redistribution_posture: preserve_license_notices
+    multi_tenant_posture: security_and_session_isolation_review
+    branding_obligations: standard_license_notice
+    model_dataset_asset_license_gate: model_provider_terms_separate
+    ginkgo_boundary: browser.task.execute
+    external_policy_gates:
+      - allowed_origins
+      - account_platform_terms
+      - approval_for_side_effects
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: activepieces
+    upstream: https://github.com/activepieces/activepieces
+    priority: P1
+    source_role: executor_candidate
+    adoption_mode: executor_candidate
+    license_family: mixed_ce_enterprise_review
+    commercial_use_posture: community_edition_review_required
+    redistribution_posture: path_specific_review_required
+    multi_tenant_posture: feature_and_license_boundary_review_required
+    branding_obligations: review_required
+    model_dataset_asset_license_gate: not_primary
+    ginkgo_boundary: taskops_executor_router
+    notes:
+      - upstream_describes_community_edition_as_MIT
+      - github_repository_metadata_may_report_NOASSERTION
+      - enterprise_features_must_be_excluded_unless_separately_licensed
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: crewai
+    upstream: https://github.com/crewAIInc/crewAI
+    priority: P1
+    source_role: executor_runtime_candidate
+    adoption_mode: executor_candidate
+    license_family: MIT
+    commercial_use_posture: permissive_subject_to_dependencies
+    redistribution_posture: preserve_license_notices
+    multi_tenant_posture: deployment_security_review
+    branding_obligations: standard_license_notice
+    model_dataset_asset_license_gate: model_provider_terms_separate
+    ginkgo_boundary: executor_router_or_internal_runtime_adapter
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: openhands
+    upstream: https://github.com/OpenHands/OpenHands
+    priority: P1
+    source_role: engineering_executor_candidate
+    adoption_mode: executor_candidate
+    license_family: core_MIT_enterprise_separate
+    commercial_use_posture: path_specific_review_required
+    redistribution_posture: path_specific_review_required
+    multi_tenant_posture: enterprise_and_security_review_required
+    branding_obligations: review_required
+    model_dataset_asset_license_gate: model_provider_terms_separate
+    ginkgo_boundary: agent_foundry_bounded_engineering_executor
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: agenta
+    upstream: https://github.com/Agenta-AI/agenta
+    priority: P1
+    source_role: eval_observability_candidate
+    adoption_mode: provider_candidate
+    license_family: MIT
+    commercial_use_posture: permissive_subject_to_dependencies
+    redistribution_posture: preserve_license_notices
+    multi_tenant_posture: deployment_and_data_isolation_review
+    branding_obligations: standard_license_notice
+    model_dataset_asset_license_gate: not_primary
+    ginkgo_boundary: optional_agent_foundry_eval_backend
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: dify
+    upstream: https://github.com/langgenius/dify
+    priority: P1
+    source_role: conditional_adapter_runtime_candidate
+    adoption_mode: adapter_candidate
+    license_family: modified_Apache-2.0_with_additional_restrictions
+    commercial_use_posture: explicit_review_required
+    redistribution_posture: additional_conditions_apply
+    multi_tenant_posture: commercial_license_or_explicit_clearance_required
+    branding_obligations: frontend_branding_restrictions_apply
+    model_dataset_asset_license_gate: required_for_dependencies_and_models
+    ginkgo_boundary: dedicated_or_cleared_agent_rag_runtime_adapter
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: awesome_n8n_templates
+    upstream: https://github.com/enescingoz/awesome-n8n-templates
+    priority: P1
+    source_role: discovery_source
+    adoption_mode: discovery_source
+    license_family: NOASSERTION_path_specific
+    commercial_use_posture: per_workflow_review_required
+    redistribution_posture: per_workflow_review_required
+    multi_tenant_posture: not_inferred
+    branding_obligations: per_source_review
+    model_dataset_asset_license_gate: workflow_dependency_specific
+    ginkgo_boundary: workflow_candidate_discovery_only
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: lobehub
+    upstream: https://github.com/lobehub/lobehub
+    priority: P2
+    source_role: operator_surface_benchmark
+    adoption_mode: benchmark
+    license_family: LobeHub_Community_License
+    commercial_use_posture: conditional_review_required
+    redistribution_posture: commercial_license_may_be_required
+    multi_tenant_posture: explicit_review_required
+    branding_obligations: license_specific
+    model_dataset_asset_license_gate: required_for_bundled_assets
+    ginkgo_boundary: operator_ux_benchmark_only
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: shortgpt
+    upstream: https://github.com/RayVentura/ShortGPT
+    priority: P2
+    source_role: pattern_source
+    adoption_mode: pattern_source
+    license_family: MIT
+    commercial_use_posture: code_permissive_dependencies_and_api_terms_separate
+    redistribution_posture: preserve_license_notices
+    multi_tenant_posture: not_assumed
+    branding_obligations: standard_license_notice
+    model_dataset_asset_license_gate: required
+    ginkgo_boundary: vertical_content_pattern_reference
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+  - id: brightdata_ai_lead_generator
+    upstream: https://github.com/brightdata/ai-lead-generator
+    priority: P2
+    source_role: reference_source
+    adoption_mode: reference_source
+    license_family: no_standard_repo_license_readme_internal_demo_restriction
+    commercial_use_posture: do_not_adopt_as_production_base_without_separate_clearance
+    redistribution_posture: no_grant_inferred
+    multi_tenant_posture: not_authorized_by_reference_repo
+    branding_obligations: unknown_review_required
+    model_dataset_asset_license_gate: provider_terms_separate
+    ginkgo_boundary: architecture_reference_only
+    architectural_authority: false
+    routing_eligible: false
+    production_eligible: false
+
+required_record_fields_before_promotion:
+  - immutable_upstream_pin
+  - source_role
+  - license_family
+  - commercial_use_posture
+  - redistribution_posture
+  - multi_tenant_posture
+  - branding_obligations
+  - model_dataset_asset_license_gate
+  - semantic_mapping
+  - validation_evidence_refs
+
+promotion_sequence:
+  - source_recorded
+  - immutable_pin_recorded
+  - license_decision_recorded
+  - semantic_mapping_defined
+  - implementation_or_adapter_prototyped
+  - deterministic_positive_tests
+  - negative_security_tests
+  - governed_e2e
+  - lifecycle_review

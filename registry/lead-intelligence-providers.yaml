@@ -1,0 +1,507 @@
+registry: lead-intelligence-providers
+version: 0.2.0
+runtime_authority: false
+lifecycle_status: PROTOTYPE
+
+principles:
+  - provider_or_tool_existence_does_not_grant_routing_eligibility
+  - software_license_does_not_override_target_source_terms
+  - public_capability_names_remain_provider_agnostic
+  - source_provenance_is_required_for_material_external_data
+  - unknown_terms_or_storage_rights_fail_closed
+  - phone_available_does_not_imply_whatsapp_valid
+  - anti_bot_or_rate_limit_bypass_is_not_authorized
+  - api_is_preferred_for_repeatable_high_volume_execution
+  - mcp_is_preferred_for_bounded_agentic_exploration
+  - actor_or_mcp_tool_availability_does_not_authorize_the_target_source
+  - cheapest_reliable_evidence_should_run_before_paid_deep_enrichment
+
+canonical_capability_family:
+  - sales.lead.discover
+  - sales.lead.normalize
+  - sales.lead.enrich
+  - sales.lead.validate
+  - sales.lead.qualify
+  - sales.lead.deduplicate
+  - sales.lead.batch.build
+  - sales.pipeline.record
+  - sales.lead.report.generate
+
+portfolio:
+  p0:
+    - google-places-api
+    - firecrawl-cloud
+    - exa
+    - apollo
+    - hunter
+    - receita-cnpj-open-data
+    - brasilapi-cnpj
+    - twilio-lookup
+    - playwright-mcp
+  p1:
+    - people-data-labs
+    - wappalyzer
+    - builtwith
+    - similarweb
+    - tavily
+    - apify
+  p2:
+    - bright-data
+    - linkedin-official
+
+sources:
+  google-places-api:
+    class: restricted_source_candidate
+    priority: P0
+    role: [local_business_discovery, geospatial_search, place_identity]
+    interfaces: [api]
+    upstream:
+      product: Google Places API New
+      docs: https://developers.google.com/maps/documentation/places/web-service
+    adoption:
+      mode: discovery_sensor
+      routing_eligible: false
+      production_eligible: false
+      persistent_lead_database_default: false
+    positive_signals:
+      - official_api
+      - text_search
+      - nearby_search
+      - place_details
+      - stable_place_id
+    blockers:
+      - exact_maps_platform_terms_review
+      - allowed_field_storage_review
+      - attribution_requirements
+      - retention_policy_review
+    notes:
+      - prefer place_id plus independently sourced canonical organization evidence
+      - technical API access does not create unrestricted prospecting-database rights
+
+  firecrawl-cloud:
+    class: provider_candidate
+    priority: P0
+    role: [web_search, scrape, crawl, map, directory_extraction, website_enrichment, structured_extraction]
+    interfaces: [api, mcp]
+    upstream:
+      repo: firecrawl/firecrawl
+      observed_pin: 071d7eb6fe284919bf4468ee97050da7281cbeb3
+      license: AGPL-3.0
+      docs: https://docs.firecrawl.dev
+    adoption:
+      mode: adapter_only
+      production_interface_preference: api
+      agentic_interface_preference: mcp
+      vendor_code: false
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - hosted_service_terms_review
+      - data_processing_review
+      - adapter_contract_tests
+      - cost_budget_tests
+      - provenance_tests
+      - governed_read_only_e2e
+    notes:
+      - cloud service and self-hosted core are separate deployment postures
+      - source terms remain independent from Firecrawl software or service terms
+
+  firecrawl-lead-workflow-pattern:
+    class: pattern_source
+    priority: reference_only
+    role: [lead_generation_workflow_reference]
+    upstream:
+      repo: firecrawl/firecrawl-workflows
+      observed_pin: 94cc91229d6cedc0613f140d3d013b150bc8e1b0
+      license: ISC
+      relevant_skill: firecrawl-lead-gen
+    adoption:
+      mode: extract_patterns_not_canonical_behavior
+      vendor_code: false
+      routing_eligible: false
+      production_eligible: false
+    notes:
+      - Ginkgo contracts policy and evals remain authoritative
+
+  firecrawl-self-hosted:
+    class: provider_deployment_candidate
+    priority: P1_review
+    role: [self_hosted_web_context]
+    interfaces: [api]
+    upstream:
+      repo: firecrawl/firecrawl
+      observed_pin: 071d7eb6fe284919bf4468ee97050da7281cbeb3
+      license: AGPL-3.0
+    adoption:
+      mode: evaluate_only
+      routing_eligible: false
+      production_eligible: false
+    blockers:
+      - agpl_network_use_and_modification_review
+      - operations_cost_review
+      - security_review
+      - deployment_ownership_decision
+
+  exa:
+    class: provider_candidate
+    priority: P0
+    role: [semantic_web_discovery, company_research, people_research, filtered_search]
+    interfaces: [api, mcp]
+    upstream:
+      product: Exa
+      docs: https://exa.ai/docs
+      mcp_docs: https://exa.ai/docs/reference/exa-mcp
+    adoption:
+      production_interface_preference: api
+      agentic_interface_preference: mcp
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - terms_and_data_processing_review
+      - search_contract_tests
+      - provenance_mapping
+      - cost_rate_tests
+      - governed_read_only_e2e
+
+  apollo:
+    class: licensed_b2b_data_candidate
+    priority: P0
+    role: [b2b_account_search, organization_search, people_search, buying_committee_discovery, enrichment]
+    interfaces: [api]
+    upstream:
+      product: Apollo
+      docs: https://docs.apollo.io
+    adoption:
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - account_plan_and_api_access_review
+      - permitted_use_and_retention_review
+      - people_data_privacy_review
+      - cost_rate_tests
+      - enrichment_provenance_mapping
+    notes:
+      - recommended semantic role is ACCOUNT_TO_BUYING_COMMITTEE
+
+  hunter:
+    class: contact_intelligence_candidate
+    priority: P0
+    role: [domain_search, email_finder, email_verifier, company_enrichment, person_enrichment]
+    interfaces: [api]
+    upstream:
+      product: Hunter
+      docs: https://hunter.io/api-documentation
+    adoption:
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - terms_privacy_review
+      - evidence_source_mapping
+      - verification_quality_tests
+      - cost_rate_tests
+    notes:
+      - use after company/domain discovery instead of as the only organization source
+
+  receita-cnpj-open-data:
+    class: public_corporate_registry_candidate
+    priority: P0
+    role: [brazil_company_identity, cnae, registration_status, qsa, capital, simples_mei]
+    interfaces: [dataset]
+    upstream:
+      publisher: Receita Federal do Brasil
+      catalog: CNPJ Dados Abertos
+      docs: https://www.gov.br/receitafederal/pt-br/assuntos/orientacao-tributaria/cadastros/consultas/dados-publicos-cnpj
+    adoption:
+      preferred_deployment: scheduled_local_ingestion_to_postgres
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - ingestion_pipeline
+      - schema_versioning
+      - update_cadence
+      - provenance_and_timestamp_fields
+      - privacy_and_allowed_use_review
+    notes:
+      - preferred low-cost Brazilian corporate identity foundation
+
+  brasilapi-cnpj:
+    class: public_api_candidate
+    priority: P0
+    role: [brazil_company_lookup]
+    interfaces: [api]
+    upstream:
+      repo: BrasilAPI/BrasilAPI
+      docs: https://brasilapi.com.br/docs
+    adoption:
+      mode: secondary_lookup
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - source_lineage_review
+      - availability_rate_tests
+      - cache_retention_policy
+
+  twilio-lookup:
+    class: validation_provider_candidate
+    priority: P0
+    role: [phone_validation, e164_normalization, line_type, carrier_signals]
+    interfaces: [api]
+    upstream:
+      product: Twilio Lookup v2
+      docs: https://www.twilio.com/docs/lookup
+    adoption:
+      routing_eligible: false
+      production_eligible: false
+      whatsapp_validation_authority: false
+    gates:
+      - account_terms_review
+      - cost_budget_tests
+      - validation_contract_tests
+    notes:
+      - valid phone or mobile line never implies valid WhatsApp account
+
+  playwright-mcp:
+    class: governed_browser_tool_candidate
+    priority: P0
+    role: [bounded_browser_read, structured_navigation]
+    interfaces: [mcp]
+    upstream:
+      repo: microsoft/playwright-mcp
+    adoption:
+      routing_eligible: false
+      production_eligible: false
+      default_risk_class: READ
+    gates:
+      - tool_allowlist
+      - origin_allowlist
+      - bounded_step_budget
+      - credential_scope
+      - prompt_tool_output_injection_tests
+      - no_form_submit_in_lead_intelligence
+    notes:
+      - no stealth or anti_bot bypass is authorized
+
+  people-data-labs:
+    class: deep_enrichment_candidate
+    priority: P1
+    role: [deep_person_enrichment, deep_company_enrichment]
+    interfaces: [api]
+    upstream:
+      product: People Data Labs
+      docs: https://docs.peopledatalabs.com
+    adoption:
+      use_as: conditional_paid_enrichment
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - privacy_permitted_use_review
+      - cost_uplift_test
+      - provenance_mapping
+    notes:
+      - recommended after cheaper Apollo/Hunter/local evidence when additional depth is required
+
+  wappalyzer:
+    class: technographics_candidate
+    priority: P1
+    role: [technographics, technology_signals]
+    interfaces: [api]
+    upstream:
+      product: Wappalyzer
+      docs: https://www.wappalyzer.com/api/
+    adoption:
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - terms_review
+      - technology_detection_quality_eval
+      - cost_uplift_test
+
+  builtwith:
+    class: technographics_candidate
+    priority: P1
+    role: [technographics, technology_lists, technology_signals]
+    interfaces: [api]
+    upstream:
+      product: BuiltWith
+      docs: https://api.builtwith.com
+    adoption:
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - terms_review
+      - technology_detection_quality_eval
+      - cost_uplift_test
+
+  similarweb:
+    class: digital_signals_candidate
+    priority: P1
+    role: [traffic_signals, engagement_signals, channel_signals, digital_presence]
+    interfaces: [api]
+    upstream:
+      product: Similarweb API
+      docs: https://docs.similarweb.com
+    adoption:
+      use_as: high_value_scoring_signal
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - plan_access_review
+      - cost_uplift_test
+      - evidence_freshness_tests
+
+  tavily:
+    class: secondary_search_candidate
+    priority: P1
+    role: [web_search, research]
+    interfaces: [api, mcp]
+    upstream:
+      product: Tavily
+      docs: https://docs.tavily.com
+    adoption:
+      fallback_policy: same_semantics_only_after_validation
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - terms_review
+      - semantic_equivalence_tests
+      - provenance_mapping
+      - cost_rate_tests
+
+  apify:
+    class: specialized_extraction_marketplace_candidate
+    priority: P1
+    role: [actor_discovery, specialized_extraction]
+    interfaces: [api, mcp]
+    upstream:
+      product: Apify
+      docs: https://docs.apify.com
+      mcp_docs: https://docs.apify.com/integrations/mcp
+    adoption:
+      actor_selection_owned_by: source_router
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - per_actor_source_policy_decision
+      - per_actor_input_output_contract
+      - actor_version_pin_where_possible
+      - cost_rate_tests
+      - negative_side_effect_tests
+    notes:
+      - ACTOR_AVAILABLE does not imply SOURCE_AUTHORIZED
+
+  bright-data:
+    class: enterprise_web_data_candidate
+    priority: P2
+    role: [heavy_web_data, structured_datasets, browser, search]
+    interfaces: [api, mcp]
+    upstream:
+      product: Bright Data
+      docs: https://docs.brightdata.com
+    adoption:
+      use_as: high_value_policy_approved_path
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - commercial_terms_review
+      - target_source_policy_review
+      - cost_threshold_policy
+      - mcp_tool_allowlist
+      - governed_e2e
+
+  linkedin-official:
+    class: restricted_professional_graph_candidate
+    priority: P2
+    role: [professional_graph, authorized_sales_intelligence]
+    interfaces: [official_api_or_product_integration]
+    upstream:
+      product: LinkedIn / Sales Navigator
+    adoption:
+      unofficial_scraping_dependency: forbidden
+      routing_eligible: false
+      production_eligible: false
+    gates:
+      - authorized_product_access
+      - permitted_use_review
+      - data_retention_and_privacy_review
+      - adapter_contract
+
+  ledger-lead-finder:
+    class: observed_external_tool_candidate
+    priority: legacy_only
+    role: [business_discovery]
+    provenance:
+      source: user_supplied_operational_observation
+      observed_date: 2026-08-21
+      public_repo_or_product_identity: unknown
+    adoption:
+      mode: optional_legacy_adapter_only
+      routing_eligible: false
+      production_eligible: false
+    blockers:
+      - deterministic_interface_unknown
+      - data_source_provenance_unknown
+      - software_or_service_terms_unknown
+      - storage_reuse_rights_unknown
+      - whatsapp_validation_semantics_unverified
+      - reproducible_quality_evidence_missing
+    reject_if:
+      - phone_is_reported_as_whatsapp_without_evidence
+      - source_terms_cannot_be_established
+      - provider_cannot_expose_evidence_lineage
+
+  gosom-google-maps-scraper:
+    class: lab_benchmark_candidate
+    priority: lab_only
+    role: [local_business_discovery_benchmark]
+    upstream:
+      repo: gosom/google-maps-scraper
+      observed_pin: 4676350a5bfdf5889e60fbd267794ab768013f02
+      license: MIT
+    adoption:
+      mode: lab_only
+      routing_eligible: false
+      production_eligible: false
+    positive_signals:
+      - self_hosted
+      - cli
+      - rest_api
+      - docker
+      - rich_business_fields
+      - agent_skill_available
+    blockers:
+      - target_source_terms_review
+    notes:
+      - MIT license only covers the scraper software
+      - it does not grant rights to collect or store target-source content
+
+source_policy_required_fields:
+  - source_id
+  - interface_type
+  - terms_or_license_decision
+  - allowed_purpose
+  - allowed_data_classes
+  - storage_retention_decision
+  - attribution_requirements
+  - rate_cost_policy
+  - evidence_semantics
+  - credential_scope
+  - side_effect_classification
+  - reviewer
+  - reviewed_at
+
+mcp_required_fields:
+  - server_identity
+  - version_or_pin
+  - tool_allowlist
+  - argument_schema
+  - network_or_source_scope
+  - side_effect_classification
+  - credential_scope
+  - evidence_mapping
+  - max_steps
+  - timeout
+  - injection_test_status
+
+promotion_doctrine: >
+  UPSTREAM_EXISTS != LICENSE_CLEARED != TARGET_SOURCE_TERMS_CLEARED != ADAPTER_EXISTS
+  != CONTRACT_PASSES != GOVERNED_E2E_PASSES != ROUTING_ELIGIBLE != PRODUCTION_ELIGIBLE
