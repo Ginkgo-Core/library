@@ -1,0 +1,74 @@
+schema_version: ginkgo.human-ai-evolution.v1
+status: proposed
+unit_of_evolution: task_pattern
+levels:
+  H0:
+    name: human_only
+    ai_authority: none
+  H1:
+    name: ai_assist
+    ai_authority: draft_research_suggest
+  H2:
+    name: ai_execute_human_approve
+    ai_authority: bounded_candidate_execution
+  H3:
+    name: ai_execute_sampled_supervision
+    ai_authority: approved_class_execution
+  H4:
+    name: policy_bounded_autonomy
+    ai_authority: execute_within_explicit_policy_budget
+  H5:
+    name: policy_bounded_optimization
+    ai_authority: propose_and_test_optimizations
+  H6:
+    name: portfolio_loop
+    ai_authority: discover_compose_measure_without_policy_self_change
+promotion_requires:
+  - typed_contract
+  - negative_and_adversarial_tests
+  - governed_e2e_evidence
+  - quality_and_sla_measurement
+  - side_effect_idempotency_where_applicable
+  - approval_and_external_gate_semantics
+  - complete_audit_evidence
+  - fail_closed_behavior_where_required
+  - cost_ceiling
+  - human_escalation_path
+initial_task_families:
+  - research.discovery
+  - sales.prospecting
+  - content.production
+  - marketing.media_buying
+  - automation.discovery_build_monitor
+  - services.freelance_fulfillment
+  - commerce.product_research
+  - crm.customer_operations
+  - finance.reconciliation
+  - legal.operations
+  - knowledge.ingestion_curation
+  - engineering.repository_operations
+  - executive.portfolio_management
+priority_dimensions:
+  - human_time_removed
+  - recurrence_volume
+  - gross_margin_or_revenue_impact
+  - customer_attach_rate_impact
+  - existing_evidence
+  - reuse_across_products
+  - operational_risk
+  - validation_cost
+  - side_effect_reversibility
+task_pattern_template:
+  id: task.domain.action
+  outcome: measurable_business_or_operational_result
+  owner_domain: domain
+  frequency: one_off_or_cadence
+  volume: 1
+  human_minutes_per_unit: null
+  risk: low_medium_high_critical
+  external_side_effects: []
+  current_level: H0
+  target_level: H1
+  capabilities_required: []
+  approval_policy: explicit
+  metrics: []
